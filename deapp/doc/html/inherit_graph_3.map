@@ -1,0 +1,5 @@
+<map id="Graphe hiérarchique des classes" name="Graphe hiérarchique des classes">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,5,68,31"/>
+<area shape="rect" id="Node000001" href="$class_q_elided_label.html" title="Widget utilitaire permettant d&#39;afficher un texte élagué." alt="" coords="116,5,215,31"/>
+<area shape="poly" id="edge6_Node000000_Node000001" title=" " alt="" coords="82,15,116,15,116,21,82,21"/>
+</map>

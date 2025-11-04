@@ -1,0 +1,13 @@
+<map id="de::FitnessStrategy" name="de::FitnessStrategy">
+<area shape="rect" id="Node000001" title="Classe de base pour les stratégies de fitness." alt="" coords="229,79,365,104"/>
+<area shape="rect" id="Node000003" href="$classde_1_1_fitness_identity.html" title="Stratégie de fitness qui retourne la valeur sans transformation." alt="" coords="5,152,135,177"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="248,111,107,154,106,149,246,106"/>
+<area shape="rect" id="Node000004" href="$classde_1_1_fitness_inverse.html" title="Stratégie de fitness qui transforme la valeur par inversion." alt="" coords="159,152,285,177"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="277,115,236,154,232,150,273,111"/>
+<area shape="rect" id="Node000005" href="$classde_1_1_fitness_linear.html" title="Stratégie de fitness qui traite la valeur en appliquant une transformation linéaire." alt="" coords="310,152,433,177"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="320,111,361,150,357,154,317,115"/>
+<area shape="rect" id="Node000006" href="$classde_1_1_fitness_opposite.html" title="Stratégie de fitness qui renvoie l&#39;opposé de la valeur donnée." alt="" coords="457,152,595,177"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="348,106,490,149,488,154,346,111"/>
+<area shape="rect" id="Node000002" href="$classde_1_1_strategy.html" title="La classe de base pour les stratégies dans l&#39;algorithme d&#39;évolution différentielle." alt="" coords="250,5,343,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="299,44,299,79,294,79,294,44"/>
+</map>

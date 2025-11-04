@@ -1,0 +1,9 @@
+<map id="QDESolutionPanel" name="QDESolutionPanel">
+<area shape="rect" id="Node000001" title="Classe abstraite servant de définition commune aux panneaux représentant un problème spécifique." alt="" coords="83,79,214,104"/>
+<area shape="rect" id="Node000003" href="$class_q_d_e_open_box_panel.html" title="Panneau représentant spécifiquement le problème de la boîte ouverte." alt="" coords="5,152,143,177"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="129,115,88,154,84,150,125,111"/>
+<area shape="rect" id="Node000004" href="$class_q_d_e_peak_panel.html" title="Panneau représentant spécifiquement le problème d&#39;identification des extrema de la fonction Peak de M..." alt="" coords="167,152,280,177"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="172,111,213,150,209,154,169,115"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="112,5,185,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="151,44,151,79,146,79,146,44"/>
+</map>

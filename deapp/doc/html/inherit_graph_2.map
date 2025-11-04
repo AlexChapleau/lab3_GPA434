@@ -1,0 +1,9 @@
+<map id="Graphe hiérarchique des classes" name="Graphe hiérarchique des classes">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,55,96,80"/>
+<area shape="rect" id="Node000001" href="$class_q_d_e_best_result_panel.html" title="Panneau affichant les résultats textuels lors de l&#39;évolution." alt="" coords="166,5,313,31"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="109,49,143,39,187,28,188,33,145,45,110,54"/>
+<area shape="rect" id="Node000002" href="$class_q_d_e_controller_panel.html" title="Panneau permettant le contrôle de la simulation." alt="" coords="170,55,309,80"/>
+<area shape="poly" id="edge4_Node000000_Node000002" title=" " alt="" coords="110,65,170,65,170,70,110,70"/>
+<area shape="rect" id="Node000003" href="$class_q_d_e_engine_parameters_panel.html" title="Panneau affichant les paramètres génériques du moteur d&#39;évolution différentielle." alt="" coords="144,104,335,129"/>
+<area shape="poly" id="edge5_Node000000_Node000003" title=" " alt="" coords="110,80,190,101,189,106,108,85"/>
+</map>

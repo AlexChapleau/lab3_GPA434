@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,80,79,105"/>
+<area shape="rect" id="Node000001" href="$class_q_d_e_solution_panel.html" title="Classe abstraite pour créer et gérer une interface utilisateur pour la visualisation de solutions." alt="" coords="127,55,257,80"/>
+<area shape="poly" id="edge13_Node000000_Node000001" title=" " alt="" coords="92,82,126,76,127,81,93,87"/>
+<area shape="rect" id="Node000005" href="$class_q_image_viewer.html" title=" " alt="" coords="139,104,245,129"/>
+<area shape="poly" id="edge17_Node000000_Node000005" title=" " alt="" coords="93,98,139,106,138,111,92,103"/>
+<area shape="rect" id="Node000002" href="$class_q_d_e_open_box_solution.html" title=" " alt="" coords="333,5,484,31"/>
+<area shape="poly" id="edge14_Node000001_Node000002" title=" " alt="" coords="261,49,351,28,353,33,262,54"/>
+<area shape="rect" id="Node000003" href="$class_q_d_e_peak_solution.html" title=" " alt="" coords="345,55,472,80"/>
+<area shape="poly" id="edge15_Node000001_Node000003" title=" " alt="" coords="271,65,345,65,345,70,271,70"/>
+<area shape="rect" id="Node000004" href="$class_q_d_e_shape_optimization_solution.html" title=" " alt="" coords="305,104,512,129"/>
+<area shape="poly" id="edge16_Node000001_Node000004" title=" " alt="" coords="262,80,353,101,351,107,261,86"/>
+</map>

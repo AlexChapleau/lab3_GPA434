@@ -1,0 +1,11 @@
+<map id="Graphe hiérarchique des classes" name="Graphe hiérarchique des classes">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,55,79,80"/>
+<area shape="rect" id="Node000001" href="$class_q_d_e_solution_panel.html" title="Classe abstraite servant de définition commune aux panneaux représentant un problème spécifique." alt="" coords="127,29,257,55"/>
+<area shape="poly" id="edge9_Node000000_Node000001" title=" " alt="" coords="92,56,126,50,127,56,93,62"/>
+<area shape="rect" id="Node000004" href="$class_q_image_viewer.html" title="Widget utilitaire permettant d&#39;afficher simplement une image." alt="" coords="139,79,245,104"/>
+<area shape="poly" id="edge12_Node000000_Node000004" title=" " alt="" coords="93,73,139,80,138,85,92,78"/>
+<area shape="rect" id="Node000002" href="$class_q_d_e_open_box_panel.html" title="Panneau représentant spécifiquement le problème de la boîte ouverte." alt="" coords="305,5,443,31"/>
+<area shape="poly" id="edge10_Node000001_Node000002" title=" " alt="" coords="270,29,305,24,306,30,271,34"/>
+<area shape="rect" id="Node000003" href="$class_q_d_e_peak_panel.html" title="Panneau représentant spécifiquement le problème d&#39;identification des extrema de la fonction Peak de M..." alt="" coords="317,55,431,80"/>
+<area shape="poly" id="edge11_Node000001_Node000003" title=" " alt="" coords="271,50,318,57,317,62,271,56"/>
+</map>

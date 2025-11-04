@@ -1,0 +1,9 @@
+<map id="PolygonBuilder" name="PolygonBuilder">
+<area shape="rect" id="Node000001" title=" " alt="" coords="250,5,359,31"/>
+<area shape="rect" id="Node000002" href="$class_random_convex_polygon_builder.html" title=" " alt="" coords="5,79,204,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="260,38,138,81,136,76,259,33"/>
+<area shape="rect" id="Node000003" href="$class_regular_polygon_builder.html" title=" " alt="" coords="228,79,381,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="307,44,307,79,302,79,302,44"/>
+<area shape="rect" id="Node000004" href="$class_star_polygon_builder.html" title=" " alt="" coords="406,79,539,104"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="345,34,446,76,444,81,343,38"/>
+</map>

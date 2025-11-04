@@ -1,0 +1,7 @@
+<map id="QDEPeakPanel" name="QDEPeakPanel">
+<area shape="rect" id="Node000001" title="Panneau représentant spécifiquement le problème d&#39;identification des extrema de la fonction Peak de M..." alt="" coords="14,152,127,177"/>
+<area shape="rect" id="Node000002" href="$class_q_d_e_solution_panel.html" title="Classe abstraite servant de définition commune aux panneaux représentant un problème spécifique." alt="" coords="5,79,136,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="73,118,73,152,68,152,68,118"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="34,5,107,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="73,44,73,79,68,79,68,44"/>
+</map>

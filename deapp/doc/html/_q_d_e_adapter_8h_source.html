@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DEApp:  Fichier source de D:/Drive/Professionnel/ETS/Enseignement/GPA434/2023_3_automne/labs/lab3/DESolver/DEApplication/QDEAdapter.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  extensions: ["tex2jax.js"],
+  jax: ["input/TeX","output/HTML-CSS"],
+});
+</script>
+<script type="text/javascript" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">DEApp
+   </div>
+   <div id="projectbrief">Differential Evolution Application</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Généré par Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Recherche');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(document).ready(function() { init_codefold(0); });
+/* @license-end */
+</script>
+</div><!-- top -->
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Chargement...</div>
+<div class="SRStatus" id="Searching">Recherche...</div>
+<div class="SRStatus" id="NoMatches">Aucune correspondance</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">D:/Drive/Professionnel/ETS/Enseignement/GPA434/2023_3_automne/labs/lab3/DESolver/DEApplication/QDEAdapter.h</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;QObject&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;DifferentialEvolution.h&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;EngineParameters.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html">   38</a></span><span class="keyword">class </span><a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a> : <span class="keyword">public</span> QObject</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>{</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    Q_OBJECT</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="comment">// explicit is added to prevent constructing a QDEAdapter from indirect QObject while QDEAdapter is required as argument into a function.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="comment">//  - see QDEController constructor first argument for an example </span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="comment">//  - some students constructed the QDEController with the first argument as &#39;this&#39; </span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="comment">//    in the DEApplication self constructor -&gt; difficult to debug by the students </span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a>(QObject* parent = <span class="keyword">nullptr</span>);     </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#ad5624200f8e039c468c5e7571c5ccba9">   48</a></span>    <a class="code hl_function" href="class_q_d_e_adapter.html#ad5624200f8e039c468c5e7571c5ccba9">QDEAdapter</a>(<a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;            </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#a1cee420e500348644dab5f040968d2a9">   49</a></span>    <a class="code hl_function" href="class_q_d_e_adapter.html#a1cee420e500348644dab5f040968d2a9">QDEAdapter</a>(<a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a>&amp;&amp;) = <span class="keywordflow">default</span>;                 </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#a447a2b31bb39d91c70a89e1e8d86fc67">   50</a></span>    <a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a>&amp; <a class="code hl_function" href="class_q_d_e_adapter.html#a447a2b31bb39d91c70a89e1e8d86fc67">operator=</a>(<a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>; </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#a6888e91ed66873445276aa032b2b7f87">   51</a></span>    <a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a>&amp; <a class="code hl_function" href="class_q_d_e_adapter.html#a6888e91ed66873445276aa032b2b7f87">operator=</a>(<a class="code hl_class" href="class_q_d_e_adapter.html">QDEAdapter</a>&amp;&amp;) = <span class="keywordflow">default</span>;      </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#afae2da0e26b73d6188f58fb82ad370af">   52</a></span>    <a class="code hl_function" href="class_q_d_e_adapter.html#afae2da0e26b73d6188f58fb82ad370af">~QDEAdapter</a>() <span class="keyword">override</span> = <span class="keywordflow">default</span>;                   </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_q_d_e_adapter.html#ad109a81cd4e46c8ed46e33821e981844">isReady</a>();                                     </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_q_d_e_adapter.html#a39e49dabc9c0d5e5c86ac967969a13a3">currentGeneration</a>() <span class="keyword">const</span>;                   </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_q_d_e_adapter.html#af934b94625cec7755e8018abd3ea1f81">isStoppingCriteriaReached</a>() <span class="keyword">const</span>;             </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    de::SolutionStrategy <span class="keyword">const</span>&amp; <a class="code hl_function" href="class_q_d_e_adapter.html#aba519c11651aeed430b43fc3e5acd250">solution</a>();             </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    QString <a class="code hl_function" href="class_q_d_e_adapter.html#a82519549fc8e495f4f54d176ccbb007b">bestSolutionInfo</a>() <span class="keyword">const</span>;                   </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    de::History <span class="keyword">const</span>&amp; <a class="code hl_function" href="class_q_d_e_adapter.html#ad0ad1ea5deeb3d085a3206d66c5078a5">statisticsHistory</a>() <span class="keyword">const</span>;       </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    de::Population <a class="code hl_function" href="class_q_d_e_adapter.html#a38684290ce12a5b5b13c9061d48b7410">actualPopulation</a>() <span class="keyword">const</span>;            </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">public</span> slots:</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    de::DifferentialEvolution::SetupState <a class="code hl_slot" href="class_q_d_e_adapter.html#af6705ca778fcd7863c4e003048921f2f">setup</a>(de::SolutionStrategy* <a class="code hl_function" href="class_q_d_e_adapter.html#aba519c11651aeed430b43fc3e5acd250">solution</a>); </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">void</span> <a class="code hl_slot" href="class_q_d_e_adapter.html#ae92051bc39e652287e47daa5ad016c3a">setEngineParameters</a>(de::EngineParameters <span class="keyword">const</span>&amp; parameters); </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordtype">void</span> <a class="code hl_slot" href="class_q_d_e_adapter.html#aed83be7fdcae36fca02371cb3599fd64">stepEvolution</a>();                               </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">void</span> <a class="code hl_slot" href="class_q_d_e_adapter.html#a13c97a24a7c727c9db42ce71ebfe84a7">reset</a>();                                       </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>signals:</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#a1ca7778bbd8154aff1b3c6a7369d1cad">   72</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="class_q_d_e_adapter.html#a1ca7778bbd8154aff1b3c6a7369d1cad">oneEvolutionStepped</a>();                         </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#a6d474bf251b4c8ed767b581e91ea8e00">   73</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="class_q_d_e_adapter.html#a6d474bf251b4c8ed767b581e91ea8e00">wasReset</a>();                                    </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="class_q_d_e_adapter.html#aecbf2f50f90a3497d7447fb2456fd0ba">   74</a></span>    <span class="keywordtype">void</span> <a class="code hl_signal" href="class_q_d_e_adapter.html#aecbf2f50f90a3497d7447fb2456fd0ba">stoppingCriteriaReached</a>();                     </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    de::DifferentialEvolution mDE;                      </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>};</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="ttc" id="aclass_q_d_e_adapter_html"><div class="ttname"><a href="class_q_d_e_adapter.html">QDEAdapter</a></div><div class="ttdoc">Classe servant d'interface entre l'algorithme d'évolution différentielle et le reste de l'application...</div><div class="ttdef"><b>Definition</b> QDEAdapter.h:39</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a13c97a24a7c727c9db42ce71ebfe84a7"><div class="ttname"><a href="class_q_d_e_adapter.html#a13c97a24a7c727c9db42ce71ebfe84a7">QDEAdapter::reset</a></div><div class="ttdeci">void reset()</div><div class="ttdoc">Réinitialise la simulation à son état initial (tel que défini par EngineParameters).</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:70</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a1ca7778bbd8154aff1b3c6a7369d1cad"><div class="ttname"><a href="class_q_d_e_adapter.html#a1ca7778bbd8154aff1b3c6a7369d1cad">QDEAdapter::oneEvolutionStepped</a></div><div class="ttdeci">void oneEvolutionStepped()</div><div class="ttdoc">Signal émis après une étape de l'évolution.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a1cee420e500348644dab5f040968d2a9"><div class="ttname"><a href="class_q_d_e_adapter.html#a1cee420e500348644dab5f040968d2a9">QDEAdapter::QDEAdapter</a></div><div class="ttdeci">QDEAdapter(QDEAdapter &amp;&amp;)=default</div><div class="ttdoc">Constructeur de déplacement par défaut.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a38684290ce12a5b5b13c9061d48b7410"><div class="ttname"><a href="class_q_d_e_adapter.html#a38684290ce12a5b5b13c9061d48b7410">QDEAdapter::actualPopulation</a></div><div class="ttdeci">de::Population actualPopulation() const</div><div class="ttdoc">Renvoie une copie de la population actuelle.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:44</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a39e49dabc9c0d5e5c86ac967969a13a3"><div class="ttname"><a href="class_q_d_e_adapter.html#a39e49dabc9c0d5e5c86ac967969a13a3">QDEAdapter::currentGeneration</a></div><div class="ttdeci">size_t currentGeneration() const</div><div class="ttdoc">Renvoie le numéro de la génération actuelle.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:14</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a447a2b31bb39d91c70a89e1e8d86fc67"><div class="ttname"><a href="class_q_d_e_adapter.html#a447a2b31bb39d91c70a89e1e8d86fc67">QDEAdapter::operator=</a></div><div class="ttdeci">QDEAdapter &amp; operator=(QDEAdapter const &amp;)=default</div><div class="ttdoc">Opérateur d'affectation par copie par défaut.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a6888e91ed66873445276aa032b2b7f87"><div class="ttname"><a href="class_q_d_e_adapter.html#a6888e91ed66873445276aa032b2b7f87">QDEAdapter::operator=</a></div><div class="ttdeci">QDEAdapter &amp; operator=(QDEAdapter &amp;&amp;)=default</div><div class="ttdoc">Opérateur d'affectation par déplacement par défaut.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a6d474bf251b4c8ed767b581e91ea8e00"><div class="ttname"><a href="class_q_d_e_adapter.html#a6d474bf251b4c8ed767b581e91ea8e00">QDEAdapter::wasReset</a></div><div class="ttdeci">void wasReset()</div><div class="ttdoc">Signal émis après la réinitialisation de l'adaptateur.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_a82519549fc8e495f4f54d176ccbb007b"><div class="ttname"><a href="class_q_d_e_adapter.html#a82519549fc8e495f4f54d176ccbb007b">QDEAdapter::bestSolutionInfo</a></div><div class="ttdeci">QString bestSolutionInfo() const</div><div class="ttdoc">Renvoie une représentation textuelle de la meilleure solution obtenue.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:34</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_aba519c11651aeed430b43fc3e5acd250"><div class="ttname"><a href="class_q_d_e_adapter.html#aba519c11651aeed430b43fc3e5acd250">QDEAdapter::solution</a></div><div class="ttdeci">de::SolutionStrategy const &amp; solution()</div><div class="ttdoc">Renvoie la solution actuelle. Cette fonction lancera une exception si aucune solution n'est définie.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:29</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_ad0ad1ea5deeb3d085a3206d66c5078a5"><div class="ttname"><a href="class_q_d_e_adapter.html#ad0ad1ea5deeb3d085a3206d66c5078a5">QDEAdapter::statisticsHistory</a></div><div class="ttdeci">de::History const &amp; statisticsHistory() const</div><div class="ttdoc">Renvoie l'historique des statistiques en lecture seule.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:39</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_ad109a81cd4e46c8ed46e33821e981844"><div class="ttname"><a href="class_q_d_e_adapter.html#ad109a81cd4e46c8ed46e33821e981844">QDEAdapter::isReady</a></div><div class="ttdeci">bool isReady()</div><div class="ttdoc">Vérifie si l'adaptateur est prêt, c'est-à-dire, si le moteur d'évolution différentielle est prêt.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:9</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_ad5624200f8e039c468c5e7571c5ccba9"><div class="ttname"><a href="class_q_d_e_adapter.html#ad5624200f8e039c468c5e7571c5ccba9">QDEAdapter::QDEAdapter</a></div><div class="ttdeci">QDEAdapter(QDEAdapter const &amp;)=default</div><div class="ttdoc">Constructeur de copie par défaut.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_ae92051bc39e652287e47daa5ad016c3a"><div class="ttname"><a href="class_q_d_e_adapter.html#ae92051bc39e652287e47daa5ad016c3a">QDEAdapter::setEngineParameters</a></div><div class="ttdeci">void setEngineParameters(de::EngineParameters const &amp;parameters)</div><div class="ttdoc">Définit les paramètres du moteur d'évolution différentielle.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:49</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_aecbf2f50f90a3497d7447fb2456fd0ba"><div class="ttname"><a href="class_q_d_e_adapter.html#aecbf2f50f90a3497d7447fb2456fd0ba">QDEAdapter::stoppingCriteriaReached</a></div><div class="ttdeci">void stoppingCriteriaReached()</div><div class="ttdoc">Signal émis lorsque le critère d'arrêt est atteint.</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_aed83be7fdcae36fca02371cb3599fd64"><div class="ttname"><a href="class_q_d_e_adapter.html#aed83be7fdcae36fca02371cb3599fd64">QDEAdapter::stepEvolution</a></div><div class="ttdeci">void stepEvolution()</div><div class="ttdoc">Effectue une étape de l'évolution.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:54</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_af6705ca778fcd7863c4e003048921f2f"><div class="ttname"><a href="class_q_d_e_adapter.html#af6705ca778fcd7863c4e003048921f2f">QDEAdapter::setup</a></div><div class="ttdeci">de::DifferentialEvolution::SetupState setup(de::SolutionStrategy *solution)</div><div class="ttdoc">Configure l'adaptateur avec des paramètres de moteur et une stratégie de solution.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:24</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_af934b94625cec7755e8018abd3ea1f81"><div class="ttname"><a href="class_q_d_e_adapter.html#af934b94625cec7755e8018abd3ea1f81">QDEAdapter::isStoppingCriteriaReached</a></div><div class="ttdeci">bool isStoppingCriteriaReached() const</div><div class="ttdoc">Vérifie si le critère d'arrêt a été atteint.</div><div class="ttdef"><b>Definition</b> QDEAdapter.cpp:19</div></div>
+<div class="ttc" id="aclass_q_d_e_adapter_html_afae2da0e26b73d6188f58fb82ad370af"><div class="ttname"><a href="class_q_d_e_adapter.html#afae2da0e26b73d6188f58fb82ad370af">QDEAdapter::~QDEAdapter</a></div><div class="ttdeci">~QDEAdapter() override=default</div><div class="ttdoc">Destructeur par défaut.</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Généré par&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
+</small></address>
+</body>
+</html>

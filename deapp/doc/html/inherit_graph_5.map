@@ -1,0 +1,5 @@
+<map id="Graphe hiérarchique des classes" name="Graphe hiérarchique des classes">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,5,100,31"/>
+<area shape="rect" id="Node000001" href="$class_q_d_e_solution_tab_panel.html" title="Panneau supervisant toutes les solutions insérées dans l&#39;application." alt="" coords="148,5,299,31"/>
+<area shape="poly" id="edge8_Node000000_Node000001" title=" " alt="" coords="114,15,147,15,147,21,114,21"/>
+</map>

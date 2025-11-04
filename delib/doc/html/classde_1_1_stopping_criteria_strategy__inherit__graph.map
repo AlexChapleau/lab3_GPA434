@@ -1,0 +1,7 @@
+<map id="de::StoppingCriteriaStrategy" name="de::StoppingCriteriaStrategy">
+<area shape="rect" id="Node000001" title="Classe de base pour les stratégies de critère d&#39;arrêt." alt="" coords="25,79,210,104"/>
+<area shape="rect" id="Node000003" href="$classde_1_1_stopping_criteria_max_generation.html" title="Stratégie de critère d&#39;arrêt basée sur le nombre maximal de générations." alt="" coords="5,152,229,177"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="120,118,120,152,115,152,115,118"/>
+<area shape="rect" id="Node000002" href="$classde_1_1_strategy.html" title="La classe de base pour les stratégies dans l&#39;algorithme d&#39;évolution différentielle." alt="" coords="71,5,164,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="120,44,120,79,115,79,115,44"/>
+</map>

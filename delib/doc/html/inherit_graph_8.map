@@ -1,0 +1,61 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classde_1_1_strategy.html" title="La classe de base pour les stratégies dans l&#39;algorithme d&#39;évolution différentielle." alt="" coords="5,540,99,565"/>
+<area shape="rect" id="Node000001" href="$classde_1_1_adaptive_domain_strategy.html" title="Stratégie de gestion du domaine des solutions pendant l&#39;évolution." alt="" coords="147,55,333,80"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="51,526,55,455,68,355,80,300,96,244,117,190,144,139,159,120,177,103,213,78,216,82,181,107,163,123,149,142,122,192,101,246,85,301,73,356,60,455,56,526"/>
+<area shape="rect" id="Node000004" href="$classde_1_1_crossover_strategy.html" title="Stratégie générique pour la fonction de croisement dans un algorithme génétique." alt="" coords="165,153,315,179"/>
+<area shape="poly" id="edge4_Node000000_Node000004" title=" " alt="" coords="57,525,89,419,114,352,144,287,186,224,225,177,229,180,191,227,149,290,119,355,94,421,62,527"/>
+<area shape="rect" id="Node000007" href="$classde_1_1_fitness_strategy.html" title="Classe de base pour les stratégies de fitness." alt="" coords="172,301,308,327"/>
+<area shape="poly" id="edge7_Node000000_Node000007" title=" " alt="" coords="69,528,227,325,231,329,74,531"/>
+<area shape="rect" id="Node000012" href="$classde_1_1_initialization_strategy.html" title="Stratégie d&#39;initialisation pour l&#39;évolution différentielle." alt="" coords="159,457,321,483"/>
+<area shape="poly" id="edge12_Node000000_Node000012" title=" " alt="" coords="93,532,209,480,211,485,95,537"/>
+<area shape="rect" id="Node000015" href="$classde_1_1_mutation_strategy.html" title="Interface de base pour une stratégie de mutation." alt="" coords="169,540,311,565"/>
+<area shape="poly" id="edge15_Node000000_Node000015" title=" " alt="" coords="112,550,169,550,169,555,112,555"/>
+<area shape="rect" id="Node000018" href="$classde_1_1_optimization_strategy.html" title="Interface de base pour une stratégie d&#39;optimisation." alt="" coords="157,613,323,639"/>
+<area shape="poly" id="edge18_Node000000_Node000018" title=" " alt="" coords="99,568,207,611,205,616,97,573"/>
+<area shape="rect" id="Node000021" href="$classde_1_1_selection_strategy.html" title="Stratégie de sélection pour l&#39;évolution différentielle." alt="" coords="167,669,313,695"/>
+<area shape="poly" id="edge21_Node000000_Node000021" title=" " alt="" coords="72,575,105,613,148,649,187,667,184,672,145,654,101,617,68,578"/>
+<area shape="rect" id="Node000023" href="$classde_1_1_solution_strategy.html" title="Stratégie de la solution pour l&#39;évolution différentielle." alt="" coords="170,731,310,756"/>
+<area shape="poly" id="edge23_Node000000_Node000023" title=" " alt="" coords="65,577,96,641,120,675,148,705,168,718,190,728,188,733,166,723,145,709,116,679,92,643,60,579"/>
+<area shape="rect" id="Node000028" href="$classde_1_1_stopping_criteria_strategy.html" title="Classe de base pour les stratégies de critère d&#39;arrêt." alt="" coords="147,804,333,829"/>
+<area shape="poly" id="edge28_Node000000_Node000028" title=" " alt="" coords="61,578,72,618,89,668,115,720,149,767,174,787,202,801,200,806,171,792,145,771,110,723,84,670,67,620,56,579"/>
+<area shape="rect" id="Node000002" href="$classde_1_1_adaptive_domain_clamped.html" title="Stratégie de domaine adaptatif avec contraintes pour l&#39;évolution différentielle." alt="" coords="399,5,587,31"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="319,49,427,28,428,33,320,55"/>
+<area shape="rect" id="Node000003" href="$classde_1_1_adaptive_domain_no_constraint.html" title="Stratégie de domaine adaptatif sans contraintes pour l&#39;évolution différentielle." alt="" coords="387,55,599,80"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="347,65,387,65,387,70,347,70"/>
+<area shape="rect" id="Node000005" href="$classde_1_1_crossover_binomial.html" title="Stratégie de croisement binomial pour un algorithme génétique." alt="" coords="418,104,569,129"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="319,148,427,127,428,132,320,153"/>
+<area shape="rect" id="Node000006" href="$classde_1_1_crossover_exponential.html" title="Stratégie de croisement exponentiel pour un algorithme génétique." alt="" coords="409,153,578,179"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="329,163,408,163,408,169,329,169"/>
+<area shape="rect" id="Node000008" href="$classde_1_1_fitness_identity.html" title="Stratégie de fitness qui retourne la valeur sans transformation." alt="" coords="429,203,558,228"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="271,292,321,263,380,237,428,223,429,229,382,242,324,268,274,296"/>
+<area shape="rect" id="Node000009" href="$classde_1_1_fitness_inverse.html" title="Stratégie de fitness qui transforme la valeur par inversion." alt="" coords="430,252,557,277"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="319,296,429,274,430,280,320,301"/>
+<area shape="rect" id="Node000010" href="$classde_1_1_fitness_linear.html" title="Stratégie de fitness qui traite la valeur en appliquant une transformation linéaire." alt="" coords="432,301,555,327"/>
+<area shape="poly" id="edge10_Node000007_Node000010" title=" " alt="" coords="322,311,432,311,432,317,322,317"/>
+<area shape="rect" id="Node000011" href="$classde_1_1_fitness_opposite.html" title="Stratégie de fitness qui renvoie l&#39;opposé de la valeur donnée." alt="" coords="424,351,563,376"/>
+<area shape="poly" id="edge11_Node000007_Node000011" title=" " alt="" coords="320,327,428,348,427,353,319,332"/>
+<area shape="rect" id="Node000013" href="$classde_1_1_initialization_by_solution.html" title="Implémentation de la stratégie de sélection qui conserve les individus ayant la meilleure valeur de f..." alt="" coords="406,400,581,425"/>
+<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="309,452,436,423,437,428,311,457"/>
+<area shape="rect" id="Node000014" href="$classde_1_1_initialization_domain_uniform.html" title="Implémentation de la stratégie de sélection qui conserve les individus ayant la meilleure valeur de f..." alt="" coords="415,450,571,490"/>
+<area shape="poly" id="edge14_Node000012_Node000014" title=" " alt="" coords="335,467,415,467,415,473,335,473"/>
+<area shape="rect" id="Node000016" href="$classde_1_1_mutation_best1.html" title="Stratégie de mutation Best1." alt="" coords="429,515,557,540"/>
+<area shape="poly" id="edge16_Node000015_Node000016" title=" " alt="" coords="325,542,429,531,429,536,325,547"/>
+<area shape="rect" id="Node000017" href="$classde_1_1_mutation_rand1.html" title="Stratégie de mutation Rand1." alt="" coords="428,564,559,589"/>
+<area shape="poly" id="edge17_Node000015_Node000017" title=" " alt="" coords="325,558,428,568,428,573,325,563"/>
+<area shape="rect" id="Node000019" href="$classde_1_1_optimization_maximization.html" title="Stratégie d&#39;optimisation par maximisation." alt="" coords="396,613,591,639"/>
+<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="337,623,396,623,396,629,337,629"/>
+<area shape="rect" id="Node000020" href="$classde_1_1_optimization_minimization.html" title="Stratégie d&#39;optimisation par minimisation." alt="" coords="398,663,589,688"/>
+<area shape="poly" id="edge20_Node000018_Node000020" title=" " alt="" coords="320,639,428,660,427,665,319,644"/>
+<area shape="rect" id="Node000022" href="$classde_1_1_selection_best_fitness.html" title="Implémentation de la stratégie de sélection qui conserve les individus ayant la meilleure valeur de f..." alt="" coords="409,712,577,737"/>
+<area shape="poly" id="edge22_Node000021_Node000022" title=" " alt="" coords="327,694,418,709,417,715,326,699"/>
+<area shape="rect" id="Node000024" href="$classde_1_1_peak_function_solution.html" title="Classe représentant une stratégie de solution pour la fonction &#39;peak&#39; de Matlab." alt="" coords="408,761,579,787"/>
+<area shape="poly" id="edge24_Node000023_Node000024" title=" " alt="" coords="324,751,408,761,408,766,324,756"/>
+<area shape="rect" id="Node000025" href="$classde_1_1_peak_function_max_solution.html" title="Classe représentant une stratégie de solution pour la résolution du maximum absolu de la fonction &#39;pe..." alt="" coords="664,712,860,737"/>
+<area shape="poly" id="edge25_Node000024_Node000025" title=" " alt="" coords="576,756,691,735,692,740,577,761"/>
+<area shape="rect" id="Node000026" href="$classde_1_1_peak_function_min_max_solution.html" title="Classe représentant une stratégie de solution pour la résolution des optimaux absolus de la fonction ..." alt="" coords="653,761,871,787"/>
+<area shape="poly" id="edge26_Node000024_Node000026" title=" " alt="" coords="592,771,653,771,653,777,592,777"/>
+<area shape="rect" id="Node000027" href="$classde_1_1_peak_function_min_solution.html" title="Classe représentant une stratégie de solution pour la résolution du minimum absolu de la fonction &#39;pe..." alt="" coords="666,811,858,836"/>
+<area shape="poly" id="edge27_Node000024_Node000027" title=" " alt="" coords="577,787,692,808,691,813,576,792"/>
+<area shape="rect" id="Node000029" href="$classde_1_1_stopping_criteria_max_generation.html" title="Stratégie de critère d&#39;arrêt basée sur le nombre maximal de générations." alt="" coords="381,811,605,836"/>
+<area shape="poly" id="edge29_Node000028_Node000029" title=" " alt="" coords="346,817,381,818,381,823,346,822"/>
+</map>

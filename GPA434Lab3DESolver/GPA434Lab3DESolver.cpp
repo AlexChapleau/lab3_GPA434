@@ -7,14 +7,12 @@ GPA434Lab3DESolver::GPA434Lab3DESolver(QWidget *parent)
     , mQDEEngineParametersPanel()
     , mQDEBestResultPanel()
     , mQDESolutionTabPanel()
-    , mQDEPeakPanel()
-    , mQDEOpenBoxPanel()
     , mQDEHistoryChartPanel()
     {
     setWindowTitle("Differential Evolution Solver");
     setWindowIcon(QIcon(":/GPA434Lab3DESolver/dna-icon"));
 
-    setupUi();
+    setupGUI();
     setupConnections();
 
 }
@@ -23,33 +21,41 @@ GPA434Lab3DESolver::~GPA434Lab3DESolver()
 {
 }
 
-void GPA434Lab3DESolver::setupUi()
+void GPA434Lab3DESolver::setupGUI()
 {
-    QWidget* centralWidget = new QWidget(this);
+    QWidget* centralWidget = new QWidget;
     setCentralWidget(centralWidget);
 
-    QHBoxLayout* mainLayout = new QHBoxLayout(centralWidget);
-    QWidget* leftWidget = new QWidget(centralWidget);
-    QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
-    QSplitter* rightSplitter = new QSplitter(Qt::Vertical, centralWidget);
+    QHBoxLayout* mainLayout = new QHBoxLayout;
+    centralWidget->setLayout(mainLayout);
 
-    mQDEControllerPanel = new QDEControllerPanel(mDEAdapter, leftWidget);
+    QWidget* leftWidget = new QWidget;
+    QVBoxLayout* leftLayout = new QVBoxLayout;
+    leftWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+    leftWidget->setLayout(leftLayout);
+
+    mQDEControllerPanel = new QDEControllerPanel(mDEAdapter);
     leftLayout->addWidget(mQDEControllerPanel);
 
-    mQDEEngineParametersPanel = new QDEEngineParametersPanel(mDEAdapter, leftWidget);
+    mQDEEngineParametersPanel = new QDEEngineParametersPanel(mDEAdapter);
     leftLayout->addWidget(mQDEEngineParametersPanel);
 
-    mQDEBestResultPanel = new QDEBestResultPanel(mDEAdapter, leftWidget);
+    mQDEBestResultPanel = new QDEBestResultPanel(mDEAdapter);
     leftLayout->addWidget(mQDEBestResultPanel);
 
-    mQDESolutionTabPanel = new QDESolutionTabPanel(mDEAdapter, rightSplitter);
-    mQDEPeakPanel = new QDEPeakPanel(rightSplitter);
-    mQDEOpenBoxPanel = new QDEOpenBoxPanel(rightSplitter);
-    mQDEHistoryChartPanel = new QDEHistoryChartPanel(mDEAdapter, rightSplitter);
-    mQDESolutionTabPanel->addSolutionPanel(mQDEPeakPanel);
-    mQDESolutionTabPanel->addSolutionPanel(mQDEOpenBoxPanel);
+    QSplitter* rightSplitter = new QSplitter;
+    rightSplitter->setOrientation(Qt::Vertical);
+
+    mQDESolutionTabPanel = new QDESolutionTabPanel(mDEAdapter);
+    mQDESolutionTabPanel->addSolutionPanel(new QDEPeakPanel);
+    mQDESolutionTabPanel->addSolutionPanel(new QDEOpenBoxPanel);
     mQDESolutionTabPanel->setCurrentIndex(0);
+    rightSplitter->addWidget(mQDESolutionTabPanel);
+
+    mQDEHistoryChartPanel = new QDEHistoryChartPanel(mDEAdapter);
     rightSplitter->addWidget(mQDEHistoryChartPanel);
+    rightSplitter->setStretchFactor(0, 7); 
+    rightSplitter->setStretchFactor(1, 3);
 
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightSplitter);
@@ -64,9 +70,8 @@ void GPA434Lab3DESolver::setupConnections()
 
     connect(mQDEEngineParametersPanel,
         &QDEEngineParametersPanel::parameterChanged,
-        [this]() {
-            mQDESolutionTabPanel->updateVisualization();
-        });
+        mQDESolutionTabPanel,
+        &QDESolutionTabPanel::updateVisualization);
 
     connect(mQDESolutionTabPanel,
         &QDESolutionTabPanel::solutionChanged,

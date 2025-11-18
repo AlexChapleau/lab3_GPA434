@@ -24,7 +24,7 @@ public:
     ~GPA434Lab3DESolver() override;
 
 private:
-    void setupUi();
+    void setupGUI();
     void setupConnections();
 
 private:
@@ -33,7 +33,5 @@ private:
     QDEEngineParametersPanel *mQDEEngineParametersPanel;
     QDEBestResultPanel *mQDEBestResultPanel;
     QDESolutionTabPanel *mQDESolutionTabPanel;
-    QDEPeakPanel *mQDEPeakPanel;
-    QDEOpenBoxPanel *mQDEOpenBoxPanel;
     QDEHistoryChartPanel *mQDEHistoryChartPanel;
 };

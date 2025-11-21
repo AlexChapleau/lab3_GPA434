@@ -2,7 +2,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QFormLayout>
-
+#include <QVBoxLayout>
 #include "PeakFunctionMinMaxSolution.h"
 
 QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
@@ -20,6 +20,7 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 
 	QVBoxLayout* layout{ new QVBoxLayout };
 	layout->addWidget(parameterGroupBox);
+
 }
 
 de::SolutionStrategy* QDEGeoOptimPanel::buildSolution() const

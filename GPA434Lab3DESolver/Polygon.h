@@ -1,30 +1,20 @@
 #pragma once
 
-#include <vector>
 #include <QPolygonF>
 #include <string>
 
 class Polygon 
 {
 public:
-    Polygon() = delete;
-    Polygon(std::string name, int peaks);
+    Polygon(int peaks = 3);
     Polygon(Polygon const&) = default;
     Polygon(Polygon&&) = default;
     Polygon& operator=(Polygon const&) = default;
     Polygon& operator=(Polygon&&) = default;
     virtual ~Polygon() = default;
 
-    double area() const;
-    QPolygonF toQPolygonF() const;
-    int peakCount() const;
-    std::string name() const;
+    virtual QVector<QPointF> buildPoints() = 0;
 
 protected:
-    virtual void buildPoints() = 0;
-    std::vector<QPointF> mPoints;
-
-private:
-    std::string mName;
     int mPeakCount;
 };

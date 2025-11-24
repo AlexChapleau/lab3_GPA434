@@ -1,0 +1,43 @@
+#include "RandomPolygon.h"
+#include "Random.h"
+#include <vector>
+#include <numbers>
+
+RandomPolygon::RandomPolygon(int peaks)
+	: Polygon(peaks)
+{
+}
+
+QVector<QPointF> RandomPolygon::buildPoints()
+{
+	QVector<QPointF> points;
+	points.reserve(mPeakCount);
+	std::vector<double> angles{ randomAngleSplit() };
+
+	for (double angle : angles) {
+		double currentAngle{ angle - 0.5 * std::numbers::pi };
+		double r{ Random::real(0.5, 1.0) };
+
+		double x{ r * std::cos(currentAngle) };
+		double y{ r * std::sin(currentAngle) };
+
+		points.emplace_back(x, y);
+	}
+	return points;
+}
+
+std::vector<double> RandomPolygon::randomAngleSplit()
+{
+	std::vector<double> splits(mPeakCount);
+	double sum{ 0.0 };
+
+	for (double& split : splits) {
+		split = Random::real(0.2, 1.5);
+		sum += split;
+	}
+
+	for (double& split : splits)
+		split = (split / sum) * 2.0 * std::numbers::pi;
+
+	return splits;
+}

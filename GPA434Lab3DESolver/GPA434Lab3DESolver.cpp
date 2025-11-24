@@ -49,7 +49,7 @@ void GPA434Lab3DESolver::setupGUI()
     mQDESolutionTabPanel = new QDESolutionTabPanel(mDEAdapter);
     mQDESolutionTabPanel->addSolutionPanel(new QDEPeakPanel);
     mQDESolutionTabPanel->addSolutionPanel(new QDEOpenBoxPanel);
-    //mQDESolutionTabPanel->addSolutionPanel(new QDEGeoOptimPanel);
+    mQDESolutionTabPanel->addSolutionPanel(new QDEGeoOptimPanel);
     mQDESolutionTabPanel->setCurrentIndex(0);
     rightSplitter->addWidget(mQDESolutionTabPanel);
 

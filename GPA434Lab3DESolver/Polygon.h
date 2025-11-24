@@ -2,7 +2,8 @@
 
 #include <QPolygonF>
 #include <string>
-
+//retourner un Qpolygon
+//polygonBuilder
 class Polygon 
 {
 public:

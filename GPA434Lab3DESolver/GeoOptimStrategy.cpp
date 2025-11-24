@@ -44,10 +44,10 @@ std::string GeoOptimStrategy::toString(de::Solution const& solution) const
 {
 	return std::format(R"...(
 Transformations du polygon de base:
-	-Translation (x,y) : ({:0.6f}, {:0.6f})
-	-Rotation (degres) : {:0.6f}
-	-Mise à l'echelle  : {:0.6f}
-	-Aire : {:0.6f})...",solution[0], solution[1], solution[2], solution[3], solution.fitness());
+-Translation (x,y) : ({:0.6f}, {:0.6f})
+-Rotation (degres) : {:0.6f}
+-Mise à l'echelle  : {:0.6f}
+-Aire : {:0.6f})...",solution[0], solution[1], solution[2], solution[3], solution.fitness());
 }
 
 double GeoOptimStrategy::process(de::Solution const& solution)
@@ -73,7 +73,7 @@ double GeoOptimStrategy::process(de::Solution const& solution)
 	if (isColliding(resultPolygon))
 		return 0.0;
 
-	return area(resultPolygon);
+	return scale;
 }
 
 //utilise la formule shoelace

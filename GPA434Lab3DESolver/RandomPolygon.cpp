@@ -39,5 +39,12 @@ std::vector<double> RandomPolygon::randomAngleSplit()
 	for (double& split : splits)
 		split = (split / sum) * 2.0 * std::numbers::pi;
 
-	return splits;
+	std::vector<double> angles(mPeakCount);
+	double acc{ 0.0 };
+	for (int i = 0; i < mPeakCount; ++i) {
+		acc += splits[i];
+		angles[i] = acc;
+	}
+
+	return angles;
 }

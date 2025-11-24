@@ -67,48 +67,38 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	int w = mVisualizationLabel->width();
 	int h = mVisualizationLabel->height();
 
-	// 1) Créer image
 	QImage img(w, h, QImage::Format_RGB32);
 	QPainter painter(&img);
 	painter.setRenderHint(QPainter::Antialiasing, true);
 
-	// 2) Fond
-	painter.fillRect(img.rect(), QColor(20, 22, 35)); // bleu foncé
+	painter.fillRect(img.rect(), QColor(20, 22, 35)); 
 
-	// 3) Dessiner obstacles
 	painter.setPen(Qt::NoPen);
-	painter.setBrush(QColor(255, 255, 255)); // blanc
+	painter.setBrush(QColor(255, 255, 255)); 
 
 	for (const QPointF& p : mObstacles)
 		painter.drawRect(p.x(), p.y(), 3, 3);
 
-	// 4) Dessiner les polygones de la population DE
-	painter.setPen(QColor(150, 150, 180, 80)); // gris clair translucide
+	painter.setPen(QColor(150, 150, 180, 80)); 
 	painter.setBrush(Qt::NoBrush);
 
-	//for (size_t i{}; i < de.actualPopulation().size(); ++i)
-	//{
-	//	QPolygonF poly = mShape;
-	//	QTransform T;
-	//	T.translate(de.actualPopulation()[i][0], de.actualPopulation()[i][1]);
-	//	T.rotate(de.actualPopulation()[i][2]);
-	//	T.scale(de.actualPopulation()[i][3], de.actualPopulation()[i][3]);
-	//	painter.drawPolygon(poly);
-	//}
-
+	
 	painter.setPen(QPen(QColor(200, 170, 40), 2));
-	painter.setBrush(QColor(200, 170, 40, 180)); // jaune translucide
+	painter.setBrush(QColor(200, 170, 40, 180)); 
 
 	QPolygonF poly = mShape;
 	QTransform T;
-	T.translate(de.actualPopulation()[0][0], de.actualPopulation()[0][1]);
-	T.rotate(de.actualPopulation()[0][2]);
-	T.scale(de.actualPopulation()[0][3], de.actualPopulation()[0][3]);
-	painter.drawPolygon(poly);
 
+	if (de.currentGeneration() > 0) {
+		T.translate(de.actualPopulation().statistics().bestSolution()[0], de.actualPopulation().statistics().bestSolution()[1]);
+		T.rotate(de.actualPopulation().statistics().bestSolution()[2]);
+		T.scale(de.actualPopulation().statistics().bestSolution()[3], de.actualPopulation().statistics().bestSolution()[3]);
+		painter.drawPolygon(T.map(poly));
+	}
+	else
+		painter.drawPolygon(poly);
 	painter.end();
 
-	// 6) Afficher l'image
 	mVisualizationLabel->setImage(img);
 }
 
@@ -166,7 +156,14 @@ void QDEGeoOptimPanel::assemblingAndLayouting()
 
 void QDEGeoOptimPanel::establishConnections()
 {
+	connect(mPolygonSelectionBox, &QComboBox::currentIndexChanged,
+			this, &QDESolutionPanel::parameterChanged);
 
+	connect(mResetObstaclesButton, &QPushButton::clicked,
+			this, &QDESolutionPanel::parameterChanged);
+
+	connect(mVisualizationLabel, &QImageViewer::resized,
+			this, &QDESolutionPanel::parameterChanged);
 }
 
 std::vector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const

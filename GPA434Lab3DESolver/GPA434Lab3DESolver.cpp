@@ -14,7 +14,7 @@ GPA434Lab3DESolver::GPA434Lab3DESolver(QWidget *parent)
 
     setupGUI();
     setupConnections();
-
+    showMaximized();
 }
 
 GPA434Lab3DESolver::~GPA434Lab3DESolver()

@@ -24,7 +24,6 @@ protected:
 	double process(de::Solution const& solution) override;
 
 private:
-	double area(QPolygonF const& poly) const;
 	bool isInsideCanvas(QPolygonF const& poly) const;
 	bool isValidSolution(de::Solution const& solution) const;
 	bool isColliding(QPolygonF const& poly) const;

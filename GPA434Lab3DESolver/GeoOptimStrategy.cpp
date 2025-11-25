@@ -47,7 +47,7 @@ Transformations du polygon de base:
 -Translation (x,y) : ({:0.6f}, {:0.6f})
 -Rotation (degres) : {:0.6f}
 -Mise à l'echelle  : {:0.6f}
--Aire : {:0.6f})...",solution[0], solution[1], solution[2], solution[3], solution.fitness());
+-Valeur Fitness : {:0.6f})...",solution[0], solution[1], solution[2], solution[3], solution.fitness());
 }
 
 double GeoOptimStrategy::process(de::Solution const& solution)
@@ -74,24 +74,6 @@ double GeoOptimStrategy::process(de::Solution const& solution)
 		return 0.0;
 
 	return scale;
-}
-
-//utilise la formule shoelace
-//https://www.101computing.net/the-shoelace-algorithm/
-double GeoOptimStrategy::area(QPolygonF const& poly) const
-{
-	int n = poly.size();
-	double sum = 0.0;
-	const QPointF* p1{};
-	const QPointF* p2{};
-
-	for (int i = 0; i < n; ++i) {
-		p1 = &poly[i];
-		p2 = &poly[(i + 1) % n];
-		sum += (p1->x() * p2->y()) - (p2->x() * p1->y());
-	}
-
-	return std::abs(sum) * 0.5;
 }
 
 bool GeoOptimStrategy::isInsideCanvas(QPolygonF const& poly) const

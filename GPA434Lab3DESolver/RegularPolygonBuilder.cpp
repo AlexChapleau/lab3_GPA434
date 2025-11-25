@@ -1,15 +1,15 @@
-#include "RegularPolygon.h"
+#include "RegularPolygonBuilder.h"
 #include <numbers>
 
-const double RegularPolygon::smDefaultRadius{ 1.0 };
+const double RegularPolygonBuilder::smDefaultRadius{ 1.0 };
 
-RegularPolygon::RegularPolygon(int peaks)
-    : Polygon(peaks)      
+RegularPolygonBuilder::RegularPolygonBuilder(std::string name, int peaks)
+    : PolygonBuilder(name, peaks)
     , mRadius{ smDefaultRadius }
 {
 }
 
-QVector<QPointF> RegularPolygon::buildPoints()
+QPolygonF RegularPolygonBuilder::buildPolygon()
 {
     QVector<QPointF> points;
     points.reserve(mPeakCount);
@@ -26,5 +26,5 @@ QVector<QPointF> RegularPolygon::buildPoints()
 
         points.emplace_back(x, y);
     }
-    return points;
+    return QPolygonF(points);
 }

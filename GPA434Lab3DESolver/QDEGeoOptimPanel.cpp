@@ -6,9 +6,9 @@
 #include <Qpainter>
 
 #include "PeakFunctionMinMaxSolution.h"
-#include "RegularPolygon.h"
-#include "StarPolygon.h"
-#include "RandomPolygon.h"
+#include "RegularPolygonBuilder.h"
+#include "StarPolygonBuilder.h"
+#include "RandomPolygonBuilder.h"
 #include "GeoOptimStrategy.h"
 #include "Random.h"
 
@@ -24,42 +24,13 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	setupGUI();
 	assemblingAndLayouting();
 	establishConnections();
+	
 }
 
 de::SolutionStrategy* QDEGeoOptimPanel::buildSolution() const
 {
-	int nbObstacles{ mObstaclesScrollBar->value() };
-	int nbPeaks{ mPeaksScrollBar->value() };
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
-
-	PolygonType type{ mPolygonSelectionBox->currentData().value<PolygonType>() };
-
-	mObstacles = generateObstacles(nbObstacles,canvasWidth,canvasHeight);
-
-	Polygon* shape{ nullptr };
-	switch (type) {
-	case PolygonType::Regular:
-		shape = new RegularPolygon(nbPeaks);
-		break;
-	case PolygonType::Star:
-		shape = new StarPolygon(nbPeaks);
-		break;
-	case PolygonType::Random:
-		shape = new RandomPolygon(nbPeaks);
-		break;
-	}
-	QVector<QPointF> shapePoints{ shape->buildPoints()};
-	delete shape;
-
-	mShape = QPolygonF(shapePoints);
-
-	QTransform t;
-	t.translate(canvasWidth / 2, canvasHeight / 2);
-	t.scale(50.0,50.0);
-	mShape = t.map(mShape);
-
-	return new GeoOptimStrategy(mShape, canvasWidth, canvasHeight, mObstacles);
+	return new GeoOptimStrategy(mShape, mVisualizationLabel->width(),
+							    mVisualizationLabel->height(), mObstacles);
 }
 
 void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
@@ -90,9 +61,11 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	QTransform T;
 
 	if (de.currentGeneration() > 0) {
-		T.translate(de.actualPopulation().statistics().bestSolution()[0], de.actualPopulation().statistics().bestSolution()[1]);
-		T.rotate(de.actualPopulation().statistics().bestSolution()[2]);
-		T.scale(de.actualPopulation().statistics().bestSolution()[3], de.actualPopulation().statistics().bestSolution()[3]);
+		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
+
+		T.translate(bestSolution[0], bestSolution[1]);
+		T.rotate(bestSolution[2]);
+		T.scale(bestSolution[3], bestSolution[3]);
 		painter.drawPolygon(T.map(poly));
 	}
 	else
@@ -100,6 +73,51 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	painter.end();
 
 	mVisualizationLabel->setImage(img);
+}
+
+void QDEGeoOptimPanel::updateObstacles()
+{
+	int nbObstacles{ mObstaclesScrollBar->value() };
+	int canvasWidth{ mVisualizationLabel->width() };
+	int canvasHeight{ mVisualizationLabel->height() };
+
+	mObstacles = generateObstacles(nbObstacles, canvasWidth, canvasHeight);
+	parameterChanged();
+}
+
+void QDEGeoOptimPanel::updateShape()
+{
+	int nbPeaks{ mPeaksScrollBar->value() };
+	int canvasWidth{ mVisualizationLabel->width() };
+	int canvasHeight{ mVisualizationLabel->height() };
+	PolygonType type{ mPolygonSelectionBox->currentData().value<PolygonType>() };
+
+	PolygonBuilder* shape{ nullptr };
+	switch (type) {
+	case PolygonType::Regular:
+		shape = new RegularPolygonBuilder("Polygone régulier", nbPeaks);
+		break;
+	case PolygonType::Star:
+		shape = new StarPolygonBuilder("Polygone étoile", nbPeaks);
+		break;
+	case PolygonType::Random:
+		shape = new RandomPolygonBuilder("Polygone aléatoire convexe", nbPeaks);
+		break;
+	}
+
+	mShape = shape->buildPolygon();
+	delete shape;
+
+	QRectF bounds = mShape.boundingRect();
+	double scaleX = (canvasWidth * 0.4) / bounds.width();
+	double scaleY = (canvasHeight * 0.4) / bounds.height();
+	double scaleFactor = std::min(scaleX, scaleY);
+
+	QTransform t;
+	t.translate(canvasWidth / 2, canvasHeight / 2);
+	t.scale(scaleFactor, scaleFactor);
+	mShape = t.map(mShape);
+	parameterChanged();
 }
 
 QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange,int minWidth)
@@ -117,7 +135,6 @@ QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRang
 	layout->addWidget(label);
 
 	connect(sb, &QScrollBar::valueChanged, label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
-	connect(sb, &QScrollBar::valueChanged, this, &QDESolutionPanel::parameterChanged);
 
 	return layout;
 }
@@ -157,13 +174,19 @@ void QDEGeoOptimPanel::assemblingAndLayouting()
 void QDEGeoOptimPanel::establishConnections()
 {
 	connect(mPolygonSelectionBox, &QComboBox::currentIndexChanged,
-			this, &QDESolutionPanel::parameterChanged);
+			this, &QDEGeoOptimPanel::updateShape);
 
 	connect(mResetObstaclesButton, &QPushButton::clicked,
-			this, &QDESolutionPanel::parameterChanged);
+			this, &QDEGeoOptimPanel::updateObstacles);
 
 	connect(mVisualizationLabel, &QImageViewer::resized,
 			this, &QDESolutionPanel::parameterChanged);
+
+	connect(mObstaclesScrollBar, &QScrollBar::valueChanged,
+			this, &QDEGeoOptimPanel::updateObstacles);
+
+	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
+			this, &QDEGeoOptimPanel::updateShape);
 }
 
 std::vector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const

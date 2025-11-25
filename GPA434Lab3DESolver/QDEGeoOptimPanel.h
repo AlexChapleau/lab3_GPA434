@@ -28,6 +28,8 @@ public:
 
 public slots:
 	void updateVisualization(QDEAdapter const& de) override;
+	void updateObstacles();
+	void updateShape();
 
 private:
 	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange, int minWidth);

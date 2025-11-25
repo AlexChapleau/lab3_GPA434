@@ -1,18 +1,18 @@
-#include "RandomPolygon.h"
+#include "RandomPolygonBuilder.h"
 #include "Random.h"
 #include <vector>
 #include <numbers>
 
-RandomPolygon::RandomPolygon(int peaks)
-	: Polygon(peaks)
+RandomPolygonBuilder::RandomPolygonBuilder(std::string name, int peaks)
+	: PolygonBuilder(name,peaks)
 {
 }
 
-QVector<QPointF> RandomPolygon::buildPoints()
+QPolygonF RandomPolygonBuilder::buildPolygon()
 {
 	QVector<QPointF> points;
 	points.reserve(mPeakCount);
-	std::vector<double> angles{ randomAngleSplit() };
+	QVector<double> angles{ randomAngleSplit() };
 
 	for (double angle : angles) {
 		double currentAngle{ angle - 0.5 * std::numbers::pi };
@@ -23,12 +23,12 @@ QVector<QPointF> RandomPolygon::buildPoints()
 
 		points.emplace_back(x, y);
 	}
-	return points;
+	return QPolygonF(points);
 }
 
-std::vector<double> RandomPolygon::randomAngleSplit()
+QVector<double> RandomPolygonBuilder::randomAngleSplit()
 {
-	std::vector<double> splits(mPeakCount);
+	QVector<double> splits(mPeakCount);
 	double sum{ 0.0 };
 
 	for (double& split : splits) {
@@ -39,7 +39,7 @@ std::vector<double> RandomPolygon::randomAngleSplit()
 	for (double& split : splits)
 		split = (split / sum) * 2.0 * std::numbers::pi;
 
-	std::vector<double> angles(mPeakCount);
+	QVector<double> angles(mPeakCount);
 	double acc{ 0.0 };
 	for (int i = 0; i < mPeakCount; ++i) {
 		acc += splits[i];

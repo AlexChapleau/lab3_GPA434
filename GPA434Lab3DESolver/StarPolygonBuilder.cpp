@@ -1,16 +1,16 @@
-#include "StarPolygon.h"
+#include "StarPolygonBuilder.h"
 #include <numbers>
 
-const double StarPolygon::smDefaultOuterRadius{ 1.0 };
+const double StarPolygonBuilder::smDefaultOuterRadius{ 1.0 };
 
-StarPolygon::StarPolygon(int peaks)
-	: Polygon(peaks)
+StarPolygonBuilder::StarPolygonBuilder(std::string name,int peaks)
+	: PolygonBuilder(name,peaks)
 	, mOuterRadius{ smDefaultOuterRadius }
 	, mInnerRadius{ mOuterRadius / 2.0 }
 {
 }
 
-QVector<QPointF> StarPolygon::buildPoints()
+QPolygonF StarPolygonBuilder::buildPolygon()
 {
 	QVector<QPointF> points;
 	int totalPoints{ mPeakCount * 2 };
@@ -28,5 +28,5 @@ QVector<QPointF> StarPolygon::buildPoints()
 
 		points.emplace_back(x, y);
 	}
-	return points;
+	return QPolygonF(points);
 }

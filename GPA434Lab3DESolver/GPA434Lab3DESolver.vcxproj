@@ -112,7 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GeoOptimStrategy.cpp" />
-    <ClCompile Include="Polygon.cpp" />
+    <ClCompile Include="PolygonBuilder.cpp" />
     <ClCompile Include="QDEAdapter.cpp" />
     <ClCompile Include="QDEBestResultPanel.cpp" />
     <ClCompile Include="QDEControllerPanel.cpp" />
@@ -126,9 +126,9 @@
     <ClCompile Include="QElidedLabel.cpp" />
     <ClCompile Include="QImageViewer.cpp" />
     <ClCompile Include="Random.cpp" />
-    <ClCompile Include="RandomPolygon.cpp" />
-    <ClCompile Include="RegularPolygon.cpp" />
-    <ClCompile Include="StarPolygon.cpp" />
+    <ClCompile Include="RandomPolygonBuilder.cpp" />
+    <ClCompile Include="RegularPolygonBuilder.cpp" />
+    <ClCompile Include="StarPolygonBuilder.cpp" />
     <QtRcc Include="GPA434Lab3DESolver.qrc" />
     <QtMoc Include="GPA434Lab3DESolver.h" />
     <ClCompile Include="GPA434Lab3DESolver.cpp" />
@@ -169,12 +169,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeoOptimStrategy.h" />
-    <ClInclude Include="Polygon.h" />
+    <ClInclude Include="PolygonBuilder.h" />
     <ClInclude Include="QDEGeoOptimPanel.h" />
     <ClInclude Include="Random.h" />
-    <ClInclude Include="RandomPolygon.h" />
-    <ClInclude Include="RegularPolygon.h" />
-    <ClInclude Include="StarPolygon.h" />
+    <ClInclude Include="RandomPolygonBuilder.h" />
+    <ClInclude Include="RegularPolygonBuilder.h" />
+    <ClInclude Include="StarPolygonBuilder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

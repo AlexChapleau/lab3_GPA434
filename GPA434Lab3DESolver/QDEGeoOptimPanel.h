@@ -36,7 +36,8 @@ private:
 	void setupGUI();
 	void assemblingAndLayouting();
 	void establishConnections();
-	std::vector<QPointF> generateObstacles(int n, int width, int height) const;
+	QVector<QPointF> generateObstacles(int n, int width, int height) const;
+	QPolygonF computePreviewPolygon() const;
 
 private:
 
@@ -45,6 +46,7 @@ private:
 	QScrollBar* mPeaksScrollBar;
 	QComboBox* mPolygonSelectionBox;
 	QPushButton* mResetObstaclesButton;
-	mutable std::vector<QPointF> mObstacles;
-	mutable QPolygonF mShape;
+	QVector<QPointF> mObstacles;
+	QPolygonF mShape;
+	QVector<QPolygonF> mShapeHistory;
 };

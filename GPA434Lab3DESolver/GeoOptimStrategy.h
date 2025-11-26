@@ -9,7 +9,7 @@ class GeoOptimStrategy : public de::SolutionStrategy
 {
 public:
 	GeoOptimStrategy() = delete;
-	GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, std::vector<QPointF> obstacles);
+	GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, QVector<QPointF> obstacles);
 	GeoOptimStrategy(GeoOptimStrategy const&) = default;
 	GeoOptimStrategy(GeoOptimStrategy&&) = default;
 	GeoOptimStrategy& operator=(GeoOptimStrategy const&) = default;
@@ -36,5 +36,5 @@ private:
 	QPolygonF mPolygon;
 	double mCanvasWidth;
 	double mCanvasHeight;
-	const std::vector<QPointF> mObstacles;
+	const QVector<QPointF> mObstacles;
 };

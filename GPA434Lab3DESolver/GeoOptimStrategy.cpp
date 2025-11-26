@@ -23,7 +23,7 @@ peut toucher leurs frontières.
 ).");
 
 
-GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, std::vector<QPointF> obstacles)
+GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, QVector<QPointF> obstacles)
 	: SolutionStrategy(smTitle, smSummary, smDescription)
 	, mCanvasWidth{ canvasWidth }
 	, mCanvasHeight{ canvasHeight }
@@ -31,10 +31,10 @@ GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double
 	, mPolygon{ polygon }
 {
 	mSolutionDomain.resize(4);
-	mSolutionDomain[0].set(-canvasWidth/2, canvasWidth/2);
-	mSolutionDomain[1].set(-canvasHeight/2, canvasHeight/2);
+	mSolutionDomain[0].set(0, canvasWidth);
+	mSolutionDomain[1].set(0, canvasHeight);
 	mSolutionDomain[2].set(-180.0, 180.0);
-	mSolutionDomain[3].set(0.01, 10);
+	mSolutionDomain[3].set(0.01, 500);
 
 	setOptimizationStrategy(new de::OptimizationMaximization);
 	setFitnessStrategy(new de::FitnessIdentity);

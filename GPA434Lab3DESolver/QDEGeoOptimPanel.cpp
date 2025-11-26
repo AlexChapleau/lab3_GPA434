@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <Qpainter>
 
+
 #include "PeakFunctionMinMaxSolution.h"
 #include "RegularPolygonBuilder.h"
 #include "StarPolygonBuilder.h"
@@ -20,56 +21,79 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	, mResetObstaclesButton{ new QPushButton("Regénérer") }
 	, mObstacles{}
 	, mShape{}
+	, mShapeHistory{}
 {
 	setupGUI();
 	assemblingAndLayouting();
 	establishConnections();
+	updateObstacles();
+	updateShape();
 	
 }
 
 de::SolutionStrategy* QDEGeoOptimPanel::buildSolution() const
 {
+
 	return new GeoOptimStrategy(mShape, mVisualizationLabel->width(),
 							    mVisualizationLabel->height(), mObstacles);
 }
 
 void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 {
-	int w = mVisualizationLabel->width();
-	int h = mVisualizationLabel->height();
+	int w{ mVisualizationLabel->width() };
+	int h{ mVisualizationLabel->height() };
 
 	QImage img(w, h, QImage::Format_RGB32);
 	QPainter painter(&img);
-	painter.setRenderHint(QPainter::Antialiasing, true);
-
-	painter.fillRect(img.rect(), QColor(20, 22, 35)); 
-
-	painter.setPen(Qt::NoPen);
-	painter.setBrush(QColor(255, 255, 255)); 
-
-	for (const QPointF& p : mObstacles)
-		painter.drawRect(p.x(), p.y(), 3, 3);
-
-	painter.setPen(QColor(150, 150, 180, 80)); 
-	painter.setBrush(Qt::NoBrush);
-
 	
-	painter.setPen(QPen(QColor(200, 170, 40), 2));
-	painter.setBrush(QColor(200, 170, 40, 180)); 
 
-	QPolygonF poly = mShape;
-	QTransform T;
+	painter.setRenderHint(QPainter::Antialiasing, true);
+	
+	painter.fillRect(img.rect(), QColor(32, 32, 48)); 
+
+	QPen obstaclePen(Qt::white);
+	obstaclePen.setWidth(3);
+	obstaclePen.setCapStyle(Qt::RoundCap);
+	painter.setPen(obstaclePen);
+
+	painter.drawPoints(mObstacles.data(), mObstacles.size());
+	
+	QPen historyPen(QColor(255,255,255,10));
+	historyPen.setWidth(1);
+	painter.setBrush(Qt::NoBrush);
+	painter.setPen(historyPen);
+
+	for (const QPolygonF& pastShape : mShapeHistory)
+	{
+		painter.drawPolygon(pastShape);
+	}
+
+
+	QPen polyPen(Qt::yellow); 
+	polyPen.setWidth(1);
+
+	QColor polyFillColor(Qt::yellow);
+	polyFillColor.setAlpha(80);
+
+	painter.setPen(polyPen);
+	painter.setBrush(polyFillColor);
+	painter.setOpacity(1.0);
 
 	if (de.currentGeneration() > 0) {
 		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
 
-		T.translate(bestSolution[0], bestSolution[1]);
-		T.rotate(bestSolution[2]);
-		T.scale(bestSolution[3], bestSolution[3]);
-		painter.drawPolygon(T.map(poly));
+		QTransform t;
+		t.translate(bestSolution[0], bestSolution[1]);
+		t.rotate(bestSolution[2]);
+		t.scale(bestSolution[3], bestSolution[3]);
+
+		QPolygonF transformed{ t.map(mShape) };   
+		painter.drawPolygon(transformed);        
+		mShapeHistory.append(transformed);
 	}
-	else
-		painter.drawPolygon(poly);
+	else {
+		painter.drawPolygon(computePreviewPolygon());
+	}
 	painter.end();
 
 	mVisualizationLabel->setImage(img);
@@ -88,8 +112,6 @@ void QDEGeoOptimPanel::updateObstacles()
 void QDEGeoOptimPanel::updateShape()
 {
 	int nbPeaks{ mPeaksScrollBar->value() };
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
 	PolygonType type{ mPolygonSelectionBox->currentData().value<PolygonType>() };
 
 	PolygonBuilder* shape{ nullptr };
@@ -108,15 +130,6 @@ void QDEGeoOptimPanel::updateShape()
 	mShape = shape->buildPolygon();
 	delete shape;
 
-	QRectF bounds = mShape.boundingRect();
-	double scaleX = (canvasWidth * 0.4) / bounds.width();
-	double scaleY = (canvasHeight * 0.4) / bounds.height();
-	double scaleFactor = std::min(scaleX, scaleY);
-
-	QTransform t;
-	t.translate(canvasWidth / 2, canvasHeight / 2);
-	t.scale(scaleFactor, scaleFactor);
-	mShape = t.map(mShape);
 	parameterChanged();
 }
 
@@ -187,19 +200,38 @@ void QDEGeoOptimPanel::establishConnections()
 
 	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
 			this, &QDEGeoOptimPanel::updateShape);
+
 }
 
-std::vector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const
+QVector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const
 {
-	std::vector<QPointF> obs;
+	QVector<QPointF> obs;
 	obs.reserve(n);
 
 	for (int i = 0; i < n; ++i)
 	{
-		int x = Random::integer(0.0, width);
-		int y = Random::integer(0.0, height);
+		int x{ Random::integer(0.0, width) };
+		int y{ Random::integer(0.0, height) };
 		obs.emplace_back(x, y);
 	}
 
 	return obs;
+}
+
+QPolygonF QDEGeoOptimPanel::computePreviewPolygon() const
+{
+	QPolygonF poly{ mShape };
+	int canvasWidth{ mVisualizationLabel->width() };
+	int canvasHeight{ mVisualizationLabel->height() };
+
+	QRectF bounds{ poly.boundingRect() };
+	double scaleX{ (canvasWidth * 0.3) / bounds.width() };
+	double scaleY{ (canvasHeight * 0.3) / bounds.height() };
+	double scaleFactor{ std::min(scaleX, scaleY) };
+
+	QTransform t;
+	t.translate(canvasWidth / 2, canvasHeight / 2);
+	t.scale(scaleFactor, scaleFactor);
+
+	return t.map(poly);
 }

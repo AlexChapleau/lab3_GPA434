@@ -6,7 +6,7 @@
 class StarPolygonBuilder : public PolygonBuilder
 {
 public:
-    StarPolygonBuilder(std::string name = "Polygone étoile", int peaks = 3);
+    StarPolygonBuilder(int peaks = 3, std::string name = "Polygone étoile");
     StarPolygonBuilder(StarPolygonBuilder const&) = default;
     StarPolygonBuilder(StarPolygonBuilder&&) = default;
     StarPolygonBuilder& operator=(StarPolygonBuilder const&) = default;

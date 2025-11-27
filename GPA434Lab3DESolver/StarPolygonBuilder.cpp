@@ -3,8 +3,8 @@
 
 const double StarPolygonBuilder::smDefaultOuterRadius{ 1.0 };
 
-StarPolygonBuilder::StarPolygonBuilder(std::string name,int peaks)
-	: PolygonBuilder(name,peaks)
+StarPolygonBuilder::StarPolygonBuilder(int peaks, std::string name)
+	: PolygonBuilder(peaks,name)
 	, mOuterRadius{ smDefaultOuterRadius }
 	, mInnerRadius{ mOuterRadius / 2.0 }
 {

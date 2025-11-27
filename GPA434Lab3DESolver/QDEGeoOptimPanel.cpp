@@ -73,7 +73,7 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	polyPen.setWidth(1);
 
 	QColor polyFillColor(Qt::yellow);
-	polyFillColor.setAlpha(80);
+	polyFillColor.setAlpha(85);
 
 	painter.setPen(polyPen);
 	painter.setBrush(polyFillColor);
@@ -88,11 +88,13 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 		t.scale(bestSolution[3], bestSolution[3]);
 
 		QPolygonF transformed{ t.map(mShape) };   
-		painter.drawPolygon(transformed);        
-		mShapeHistory.append(transformed);
+		painter.drawPolygon(transformed);       
+		if(de.currentGeneration() % 10 == 0)
+			mShapeHistory.append(transformed);
 	}
 	else {
 		painter.drawPolygon(computePreviewPolygon());
+		mShapeHistory.clear();
 	}
 	painter.end();
 
@@ -117,13 +119,13 @@ void QDEGeoOptimPanel::updateShape()
 	PolygonBuilder* shape{ nullptr };
 	switch (type) {
 	case PolygonType::Regular:
-		shape = new RegularPolygonBuilder("Polygone régulier", nbPeaks);
+		shape = new RegularPolygonBuilder(nbPeaks);
 		break;
 	case PolygonType::Star:
-		shape = new StarPolygonBuilder("Polygone étoile", nbPeaks);
+		shape = new StarPolygonBuilder(nbPeaks);
 		break;
 	case PolygonType::Random:
-		shape = new RandomPolygonBuilder("Polygone aléatoire convexe", nbPeaks);
+		shape = new RandomPolygonBuilder(nbPeaks);
 		break;
 	}
 
@@ -200,6 +202,8 @@ void QDEGeoOptimPanel::establishConnections()
 
 	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
 			this, &QDEGeoOptimPanel::updateShape);
+
+
 
 }
 

@@ -3,8 +3,8 @@
 #include <vector>
 #include <numbers>
 
-RandomPolygonBuilder::RandomPolygonBuilder(std::string name, int peaks)
-	: PolygonBuilder(name,peaks)
+RandomPolygonBuilder::RandomPolygonBuilder(int peaks, std::string name)
+	: PolygonBuilder(peaks,name)
 {
 }
 

@@ -3,8 +3,8 @@
 
 const double RegularPolygonBuilder::smDefaultRadius{ 1.0 };
 
-RegularPolygonBuilder::RegularPolygonBuilder(std::string name, int peaks)
-    : PolygonBuilder(name, peaks)
+RegularPolygonBuilder::RegularPolygonBuilder(int peaks, std::string name)
+    : PolygonBuilder(peaks, name)
     , mRadius{ smDefaultRadius }
 {
 }

@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string>
+
 #include "QDESolutionPanel.h"
 #include <SolutionStrategy.h>
-
 
 class GeoOptimStrategy : public de::SolutionStrategy
 {
 public:
 	GeoOptimStrategy() = delete;
-	GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, QVector<QPointF> obstacles);
+	GeoOptimStrategy(QPolygonF polygon, double canvasWidth,
+					 double canvasHeight, QVector<QPointF> obstacles);
 	GeoOptimStrategy(GeoOptimStrategy const&) = default;
 	GeoOptimStrategy(GeoOptimStrategy&&) = default;
 	GeoOptimStrategy& operator=(GeoOptimStrategy const&) = default;

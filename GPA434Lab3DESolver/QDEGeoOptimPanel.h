@@ -9,6 +9,7 @@
 #include <SolutionStrategy.h>
 #include "QDESolutionPanel.h"
 #include "QImageViewer.h"
+#include "PolygonBuilder.h"
 
 
 class QDEGeoOptimPanel : public QDESolutionPanel
@@ -22,7 +23,7 @@ public:
 	QDEGeoOptimPanel(QDEGeoOptimPanel&&) = default;
 	QDEGeoOptimPanel& operator=(QDEGeoOptimPanel const&) = default;
 	QDEGeoOptimPanel& operator=(QDEGeoOptimPanel&&) = default;
-	~QDEGeoOptimPanel() override = default;
+	~QDEGeoOptimPanel() override;
 
 	de::SolutionStrategy* buildSolution() const override;
 
@@ -40,7 +41,6 @@ private:
 	QPolygonF computePreviewPolygon() const;
 
 private:
-
 	QImageViewer* mVisualizationLabel;
 	QScrollBar* mObstaclesScrollBar;
 	QScrollBar* mPeaksScrollBar;
@@ -49,4 +49,5 @@ private:
 	QVector<QPointF> mObstacles;
 	QPolygonF mShape;
 	QVector<QPolygonF> mShapeHistory;
+	QVector<PolygonBuilder*> mBuilders;
 };

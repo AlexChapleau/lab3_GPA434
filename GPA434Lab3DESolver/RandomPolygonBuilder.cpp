@@ -1,9 +1,11 @@
 #include "RandomPolygonBuilder.h"
-#include "Random.h"
+
 #include <vector>
 #include <numbers>
 
-RandomPolygonBuilder::RandomPolygonBuilder(int peaks, std::string name)
+#include "Random.h"
+
+RandomPolygonBuilder::RandomPolygonBuilder(int peaks, QString name)
 	: PolygonBuilder(peaks,name)
 {
 }

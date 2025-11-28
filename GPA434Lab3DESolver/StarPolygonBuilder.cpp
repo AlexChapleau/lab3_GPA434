@@ -1,9 +1,10 @@
 #include "StarPolygonBuilder.h"
+
 #include <numbers>
 
 const double StarPolygonBuilder::smDefaultOuterRadius{ 1.0 };
 
-StarPolygonBuilder::StarPolygonBuilder(int peaks, std::string name)
+StarPolygonBuilder::StarPolygonBuilder(int peaks, QString name)
 	: PolygonBuilder(peaks,name)
 	, mOuterRadius{ smDefaultOuterRadius }
 	, mInnerRadius{ mOuterRadius / 2.0 }

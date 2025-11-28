@@ -5,7 +5,6 @@
 #include <QVBoxLayout>
 #include <Qpainter>
 
-
 #include "PeakFunctionMinMaxSolution.h"
 #include "RegularPolygonBuilder.h"
 #include "StarPolygonBuilder.h"
@@ -22,18 +21,27 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	, mObstacles{}
 	, mShape{}
 	, mShapeHistory{}
+	, mBuilders{
+		  new RegularPolygonBuilder(),
+		  new StarPolygonBuilder(),
+		  new RandomPolygonBuilder()
+	}
 {
 	setupGUI();
 	assemblingAndLayouting();
 	establishConnections();
 	updateObstacles();
 	updateShape();
-	
+}
+
+QDEGeoOptimPanel::~QDEGeoOptimPanel()
+{
+	for (PolygonBuilder* builder : mBuilders)
+		delete builder;
 }
 
 de::SolutionStrategy* QDEGeoOptimPanel::buildSolution() const
 {
-
 	return new GeoOptimStrategy(mShape, mVisualizationLabel->width(),
 							    mVisualizationLabel->height(), mObstacles);
 }
@@ -46,7 +54,6 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	QImage img(w, h, QImage::Format_RGB32);
 	QPainter painter(&img);
 	
-
 	painter.setRenderHint(QPainter::Antialiasing, true);
 	
 	painter.fillRect(img.rect(), QColor(32, 32, 48)); 
@@ -68,17 +75,16 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 		painter.drawPolygon(pastShape);
 	}
 
-
 	QPen polyPen(Qt::yellow); 
 	polyPen.setWidth(1);
 
 	QColor polyFillColor(Qt::yellow);
-	polyFillColor.setAlpha(85);
+	polyFillColor.setAlpha(95);
 
 	painter.setPen(polyPen);
 	painter.setBrush(polyFillColor);
 	painter.setOpacity(1.0);
-
+	
 	if (de.currentGeneration() > 0) {
 		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
 
@@ -88,8 +94,9 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 		t.scale(bestSolution[3], bestSolution[3]);
 
 		QPolygonF transformed{ t.map(mShape) };   
-		painter.drawPolygon(transformed);       
-		if(de.currentGeneration() % 10 == 0)
+		painter.drawPolygon(transformed);    
+
+		if(de.currentGeneration() % 5 == 0)
 			mShapeHistory.append(transformed);
 	}
 	else {
@@ -114,28 +121,16 @@ void QDEGeoOptimPanel::updateObstacles()
 void QDEGeoOptimPanel::updateShape()
 {
 	int nbPeaks{ mPeaksScrollBar->value() };
-	PolygonType type{ mPolygonSelectionBox->currentData().value<PolygonType>() };
+	int index{ mPolygonSelectionBox->currentIndex() };
 
-	PolygonBuilder* shape{ nullptr };
-	switch (type) {
-	case PolygonType::Regular:
-		shape = new RegularPolygonBuilder(nbPeaks);
-		break;
-	case PolygonType::Star:
-		shape = new StarPolygonBuilder(nbPeaks);
-		break;
-	case PolygonType::Random:
-		shape = new RandomPolygonBuilder(nbPeaks);
-		break;
-	}
-
-	mShape = shape->buildPolygon();
-	delete shape;
+	mBuilders[index]->setPeakCount(nbPeaks);
+	mShape = mBuilders[index]->buildPolygon();
 
 	parameterChanged();
 }
 
-QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange,int minWidth)
+QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
+													int maxRange, int minWidth)
 {
 	sb = new QScrollBar(Qt::Horizontal);
 	sb->setRange(minRange, maxRange);
@@ -149,16 +144,16 @@ QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRang
 	layout->addWidget(sb);
 	layout->addWidget(label);
 
-	connect(sb, &QScrollBar::valueChanged, label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+	connect(sb, &QScrollBar::valueChanged,
+			label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
 
 	return layout;
 }
 
 void QDEGeoOptimPanel::setupGUI()
 {
-	mPolygonSelectionBox->addItem("Polygone régulier", QVariant::fromValue(PolygonType::Regular));
-	mPolygonSelectionBox->addItem("Polygone étoile", QVariant::fromValue(PolygonType::Star));
-	mPolygonSelectionBox->addItem("Polygone aléatoire convexe", QVariant::fromValue(PolygonType::Random));
+	for (PolygonBuilder* builder : mBuilders)
+		mPolygonSelectionBox->addItem(builder->name());
 }
 
 void QDEGeoOptimPanel::assemblingAndLayouting()
@@ -194,17 +189,25 @@ void QDEGeoOptimPanel::establishConnections()
 	connect(mResetObstaclesButton, &QPushButton::clicked,
 			this, &QDEGeoOptimPanel::updateObstacles);
 
-	connect(mVisualizationLabel, &QImageViewer::resized,
-			this, &QDESolutionPanel::parameterChanged);
-
 	connect(mObstaclesScrollBar, &QScrollBar::valueChanged,
 			this, &QDEGeoOptimPanel::updateObstacles);
 
 	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
 			this, &QDEGeoOptimPanel::updateShape);
 
+	// à discuter avec JC ou Emile
+	connect(mVisualizationLabel, &QImageViewer::resized, this, [this]() {
+		static bool firstResizeDone{ false };
 
+		if (!firstResizeDone) {
+			firstResizeDone = true;
 
+			updateObstacles(); 
+			updateShape();     
+		}
+
+		parameterChanged();
+		});
 }
 
 QVector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const
@@ -239,3 +242,4 @@ QPolygonF QDEGeoOptimPanel::computePreviewPolygon() const
 
 	return t.map(poly);
 }
+

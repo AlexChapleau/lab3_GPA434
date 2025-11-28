@@ -4,7 +4,7 @@
 class RandomPolygonBuilder : public PolygonBuilder
 {
 public:
-    RandomPolygonBuilder(int peaks = 3, std::string name = "Polygone aléatoire convexe");
+    RandomPolygonBuilder(int peaks = 3, QString name = "Polygone aléatoire convexe");
     RandomPolygonBuilder(RandomPolygonBuilder const&) = default;
     RandomPolygonBuilder(RandomPolygonBuilder&&) = default;
     RandomPolygonBuilder& operator=(RandomPolygonBuilder const&) = default;

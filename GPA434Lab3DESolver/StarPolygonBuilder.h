@@ -1,12 +1,13 @@
 ﻿#pragma once
 
 #include <string>
+
 #include "PolygonBuilder.h"
 
 class StarPolygonBuilder : public PolygonBuilder
 {
 public:
-    StarPolygonBuilder(int peaks = 3, std::string name = "Polygone étoile");
+    StarPolygonBuilder(int peaks = 3, QString name = "Polygone étoile");
     StarPolygonBuilder(StarPolygonBuilder const&) = default;
     StarPolygonBuilder(StarPolygonBuilder&&) = default;
     StarPolygonBuilder& operator=(StarPolygonBuilder const&) = default;

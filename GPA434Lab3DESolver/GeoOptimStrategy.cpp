@@ -23,7 +23,8 @@ peut toucher leurs frontières.
 ).");
 
 
-GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth, double canvasHeight, QVector<QPointF> obstacles)
+GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth,
+								   double canvasHeight, QVector<QPointF> obstacles)
 	: SolutionStrategy(smTitle, smSummary, smDescription)
 	, mCanvasWidth{ canvasWidth }
 	, mCanvasHeight{ canvasHeight }
@@ -47,7 +48,9 @@ Transformations du polygon de base:
 -Translation (x,y) : ({:0.6f}, {:0.6f})
 -Rotation (degres) : {:0.6f}
 -Mise à l'echelle  : {:0.6f}
--Valeur Fitness : {:0.6f})...",solution[0], solution[1], solution[2], solution[3], solution.fitness());
+-Valeur Fitness : {:0.6f})...",
+	solution[0], solution[1], solution[2], solution[3], solution.fitness()
+	);
 }
 
 double GeoOptimStrategy::process(de::Solution const& solution)

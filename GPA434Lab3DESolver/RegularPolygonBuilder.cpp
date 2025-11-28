@@ -1,9 +1,10 @@
 #include "RegularPolygonBuilder.h"
+
 #include <numbers>
 
 const double RegularPolygonBuilder::smDefaultRadius{ 1.0 };
 
-RegularPolygonBuilder::RegularPolygonBuilder(int peaks, std::string name)
+RegularPolygonBuilder::RegularPolygonBuilder(int peaks, QString name)
     : PolygonBuilder(peaks, name)
     , mRadius{ smDefaultRadius }
 {

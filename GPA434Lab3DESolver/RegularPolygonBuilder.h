@@ -4,7 +4,7 @@
 class RegularPolygonBuilder : public PolygonBuilder
 {
 public:
-    RegularPolygonBuilder(int peaks = 3, std::string name = "Polygone Régulier");
+    RegularPolygonBuilder(int peaks = 3, QString name = "Polygone Régulier");
     RegularPolygonBuilder(RegularPolygonBuilder const&) = default;
     RegularPolygonBuilder(RegularPolygonBuilder&&) = default;
     RegularPolygonBuilder& operator=(RegularPolygonBuilder const&) = default;

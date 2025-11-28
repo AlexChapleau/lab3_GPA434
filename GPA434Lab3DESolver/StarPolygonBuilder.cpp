@@ -5,7 +5,7 @@
 const double StarPolygonBuilder::smDefaultOuterRadius{ 1.0 };
 
 StarPolygonBuilder::StarPolygonBuilder(int peaks, QString name)
-	: PolygonBuilder(peaks,name)
+	: PolygonBuilder(name, peaks)
 	, mOuterRadius{ smDefaultOuterRadius }
 	, mInnerRadius{ mOuterRadius / 2.0 }
 {

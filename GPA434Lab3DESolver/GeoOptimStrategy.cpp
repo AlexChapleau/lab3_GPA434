@@ -8,7 +8,7 @@
 const std::string GeoOptimStrategy::smTitle("Optimisation géométrique");
 const std::string GeoOptimStrategy::smSummary(R".(
 <p>
-Le problème de l'optimisation géométrique consiste à trouver la transformationaffine permettant de
+Le problème de l'optimisation géométrique consiste à trouver la transformation affine permettant de
 disposer la plus grande forme géométrique sur une surface parsemée d’obstacles.
 </p>
 ).");

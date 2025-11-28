@@ -1,12 +1,11 @@
 #include "RandomPolygonBuilder.h"
 
-#include <vector>
 #include <numbers>
 
 #include "Random.h"
 
 RandomPolygonBuilder::RandomPolygonBuilder(int peaks, QString name)
-	: PolygonBuilder(peaks,name)
+	: PolygonBuilder(name,peaks)
 {
 }
 

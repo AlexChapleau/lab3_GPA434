@@ -31,6 +31,30 @@
     <Filter Include="Header Files\WidgetUtilities">
       <UniqueIdentifier>{bc7fac40-9eeb-471b-8de4-a94d753f0ffb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PolygonUtilities">
+      <UniqueIdentifier>{a389c8c3-45bb-4704-a890-f2ccf33393fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{2482fa9f-48ee-4785-ae8b-e77bd6b842d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{91cb0f6f-7d37-409e-a586-88ccca9edb72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PolygonUtilities">
+      <UniqueIdentifier>{866f6ca9-fa99-433a-a47a-0e95761c7e31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DEStrategies">
+      <UniqueIdentifier>{bd15aae8-2c28-4d78-8642-77dcf0bd5d05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DEStrategies">
+      <UniqueIdentifier>{27e9697d-04d5-4eaf-9fd1-d50d55619d76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SensorUtilities">
+      <UniqueIdentifier>{8589bbc2-0797-42df-9d73-9bf453c5e23f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SensorUtilities">
+      <UniqueIdentifier>{83792962-fff0-4c4c-ac3d-5b77fc6388c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="GPA434Lab3DESolver.qrc">
@@ -80,26 +104,35 @@
     <ClCompile Include="QDEAdapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeoOptimStrategy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QDEGeoOptimPanel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PolygonBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RandomPolygonBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RegularPolygonBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StarPolygonBuilder.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ProblemToSolveSubPanels</Filter>
     </ClCompile>
     <ClCompile Include="Random.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonBuilder.cpp">
+      <Filter>Source Files\PolygonUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="RegularPolygonBuilder.cpp">
+      <Filter>Source Files\PolygonUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="StarPolygonBuilder.cpp">
+      <Filter>Source Files\PolygonUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomPolygonBuilder.cpp">
+      <Filter>Source Files\PolygonUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="GeoOptimStrategy.cpp">
+      <Filter>Source Files\DEStrategies</Filter>
+    </ClCompile>
+    <ClCompile Include="Sensor.cpp">
+      <Filter>Source Files\SensorUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleSensor.cpp">
+      <Filter>Source Files\SensorUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="SweepSensor.cpp">
+      <Filter>Source Files\SensorUtilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,25 +172,34 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QDEGeoOptimPanel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Random.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoOptimStrategy.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ProblemToSolveSubPanels</Filter>
     </ClInclude>
     <ClInclude Include="PolygonBuilder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PolygonUtilities</Filter>
     </ClInclude>
     <ClInclude Include="RandomPolygonBuilder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PolygonUtilities</Filter>
     </ClInclude>
     <ClInclude Include="RegularPolygonBuilder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PolygonUtilities</Filter>
     </ClInclude>
     <ClInclude Include="StarPolygonBuilder.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PolygonUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="GeoOptimStrategy.h">
+      <Filter>Header Files\DEStrategies</Filter>
+    </ClInclude>
+    <ClInclude Include="Sensor.h">
+      <Filter>Header Files\SensorUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleSensor.h">
+      <Filter>Header Files\SensorUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="SweepSensor.h">
+      <Filter>Header Files\SensorUtilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

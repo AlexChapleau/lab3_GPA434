@@ -22,16 +22,14 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	, mShape{}
 	, mShapeHistory{}
 	, mBuilders{
-		  new RegularPolygonBuilder(),
-		  new StarPolygonBuilder(),
-		  new RandomPolygonBuilder()
+		  new RegularPolygonBuilder,
+		  new StarPolygonBuilder,
+		  new RandomPolygonBuilder
 	}
 {
 	setupGUI();
 	assemblingAndLayouting();
 	establishConnections();
-	updateObstacles();
-	updateShape();
 }
 
 QDEGeoOptimPanel::~QDEGeoOptimPanel()
@@ -65,7 +63,7 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 
 	painter.drawPoints(mObstacles.data(), mObstacles.size());
 	
-	QPen historyPen(QColor(255,255,255,10));
+	QPen historyPen(QColor(255,255,255,30));
 	historyPen.setWidth(1);
 	painter.setBrush(Qt::NoBrush);
 	painter.setPen(historyPen);
@@ -96,7 +94,7 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 		QPolygonF transformed{ t.map(mShape) };   
 		painter.drawPolygon(transformed);    
 
-		if(de.currentGeneration() % 5 == 0)
+		if (mShapeHistory.isEmpty() || mShapeHistory.last() != transformed)
 			mShapeHistory.append(transformed);
 	}
 	else {
@@ -110,20 +108,15 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 
 void QDEGeoOptimPanel::updateObstacles()
 {
-	int nbObstacles{ mObstaclesScrollBar->value() };
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
-
-	mObstacles = generateObstacles(nbObstacles, canvasWidth, canvasHeight);
+	mObstacles = generateObstacles(mObstaclesScrollBar->value());
 	parameterChanged();
 }
 
 void QDEGeoOptimPanel::updateShape()
 {
-	int nbPeaks{ mPeaksScrollBar->value() };
 	int index{ mPolygonSelectionBox->currentIndex() };
 
-	mBuilders[index]->setPeakCount(nbPeaks);
+	mBuilders[index]->setPeakCount(mPeaksScrollBar->value());
 	mShape = mBuilders[index]->buildPolygon();
 
 	parameterChanged();
@@ -210,15 +203,18 @@ void QDEGeoOptimPanel::establishConnections()
 		});
 }
 
-QVector<QPointF> QDEGeoOptimPanel::generateObstacles(int n, int width, int height) const
+QVector<QPointF> QDEGeoOptimPanel::generateObstacles(int n) const
 {
+	int canvasWidth{ mVisualizationLabel->width() };
+	int canvasHeight{ mVisualizationLabel->height() };
+
 	QVector<QPointF> obs;
 	obs.reserve(n);
 
 	for (int i = 0; i < n; ++i)
 	{
-		int x{ Random::integer(0.0, width) };
-		int y{ Random::integer(0.0, height) };
+		int x{ Random::integer(0.0, canvasWidth) };
+		int y{ Random::integer(0.0, canvasHeight) };
 		obs.emplace_back(x, y);
 	}
 

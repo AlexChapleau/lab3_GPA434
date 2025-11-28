@@ -5,7 +5,7 @@
 const double RegularPolygonBuilder::smDefaultRadius{ 1.0 };
 
 RegularPolygonBuilder::RegularPolygonBuilder(int peaks, QString name)
-    : PolygonBuilder(peaks, name)
+    : PolygonBuilder(name,peaks)
     , mRadius{ smDefaultRadius }
 {
 }

@@ -7,7 +7,7 @@ class PolygonBuilder
 {
 public:
     PolygonBuilder() = delete;
-    PolygonBuilder(int peaks, QString name);
+    PolygonBuilder(QString name, int peaks);
     PolygonBuilder(PolygonBuilder const&) = default;
     PolygonBuilder(PolygonBuilder&&) = default;
     PolygonBuilder& operator=(PolygonBuilder const&) = default;
@@ -20,5 +20,7 @@ public:
 
 protected:
     int mPeakCount;
+
+private:
     QString mName;
 };

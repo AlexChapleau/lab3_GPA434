@@ -4,7 +4,6 @@
 #include <QHBoxLayout>
 #include <QComboBox>
 #include <QPushButton>
-#include <QMetaType>
 
 #include <SolutionStrategy.h>
 #include "QDESolutionPanel.h"
@@ -14,8 +13,6 @@
 
 class QDEGeoOptimPanel : public QDESolutionPanel
 {
-public:
-	enum class PolygonType{ Regular, Star, Random };
 
 public:
 	QDEGeoOptimPanel(QWidget* parent = nullptr);
@@ -37,7 +34,7 @@ private:
 	void setupGUI();
 	void assemblingAndLayouting();
 	void establishConnections();
-	QVector<QPointF> generateObstacles(int n, int width, int height) const;
+	QVector<QPointF> generateObstacles(int n) const;
 	QPolygonF computePreviewPolygon() const;
 
 private:

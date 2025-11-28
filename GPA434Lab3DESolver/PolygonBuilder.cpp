@@ -1,7 +1,7 @@
 #include "PolygonBuilder.h"
 
 
-PolygonBuilder::PolygonBuilder(int peaks, QString name)
+PolygonBuilder::PolygonBuilder(QString name,int peaks)
 	: mPeakCount{ std::max(peaks,3) }
 	, mName{ name }
 {

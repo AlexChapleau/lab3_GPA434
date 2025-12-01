@@ -14,9 +14,12 @@ SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
     mTypeCombo->addItem("Capteur Rideau");
 
     
-    if (dynamic_cast<CircleSensor*>(sensor))     mTypeCombo->setCurrentIndex(0);
-    if (dynamic_cast<SweepSensor*>(sensor))      mTypeCombo->setCurrentIndex(1);
-    if (dynamic_cast<CurtainSensor*>(sensor))    mTypeCombo->setCurrentIndex(2);
+    if (dynamic_cast<CircleSensor*>(sensor))
+        mTypeCombo->setCurrentIndex(0);
+    else if (dynamic_cast<SweepSensor*>(sensor))
+        mTypeCombo->setCurrentIndex(1);
+    else if (dynamic_cast<CurtainSensor*>(sensor))
+        mTypeCombo->setCurrentIndex(2);
 
     connect(mTypeCombo, &QComboBox::currentIndexChanged,
         this, &SensorConfigWidget::onTypeChanged);
@@ -37,6 +40,7 @@ void SensorConfigWidget::rebuildParameterUI()
 
         if (labelItem && labelItem->widget())
             labelItem->widget()->deleteLater();
+
         if (fieldItem && fieldItem->widget())
             fieldItem->widget()->deleteLater();
 
@@ -50,16 +54,25 @@ void SensorConfigWidget::rebuildParameterUI()
     {
         const Sensor::Parameter& p = params[i];
 
-        auto sb = new QDoubleSpinBox;
+        QScrollBar* sb = new QScrollBar(Qt::Horizontal);
         sb->setRange(p.min, p.max);
         sb->setValue(p.value);
-        sb->setDecimals(2);
         sb->setProperty("paramIndex", i);
 
-        connect(sb, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+        QLabel* label{ new QLabel(QString::number(sb->value())) };
+        label->setFixedWidth(20);
+
+        QHBoxLayout* layout{ new QHBoxLayout };
+        layout->addWidget(sb);
+        layout->addWidget(label);
+
+        connect(sb, &QScrollBar::valueChanged,
+            label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+
+        connect(sb, &QScrollBar::valueChanged,
             this, &SensorConfigWidget::onParamChanged);
 
-        mForm->addRow(p.name + " :", sb);
+        mForm->addRow(p.name + " :", layout);
         mParamEditors.push_back(sb);
     }
 }
@@ -86,9 +99,11 @@ Sensor* SensorConfigWidget::createSensorOfType(int type) const
     return new CircleSensor; 
 }
 
-void SensorConfigWidget::onParamChanged(double value)
+void SensorConfigWidget::onParamChanged(int value)
 {
-    QDoubleSpinBox* sb = qobject_cast<QDoubleSpinBox*>(sender());
+    QScrollBar* sb = qobject_cast<QScrollBar*>(sender());
+    if (!sb) return; 
+
     int index = sb->property("paramIndex").toInt();
 
     mSensor->setParameter(index, value);

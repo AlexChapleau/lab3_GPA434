@@ -3,8 +3,10 @@
 #include <QWidget>
 #include <QFormLayout>
 #include <QComboBox>
-#include <QDoubleSpinBox>
+#include <QSpinBox>
 #include <QVector>
+#include <QScrollBar>
+#include <QLabel>
 
 #include "Sensor.h"
 #include "CircleSensor.h"
@@ -19,12 +21,14 @@ class SensorConfigWidget : public QWidget
 public:
     SensorConfigWidget(Sensor* sensor, QWidget* parent = nullptr);
 
+    Sensor* sensor() const { return mSensor; }
+
 signals:
     void sensorChanged();    
 
 private slots:
     void onTypeChanged(int index);
-    void onParamChanged(double value);
+    void onParamChanged(int value);
 
 private:
     void rebuildParameterUI();
@@ -34,6 +38,6 @@ private:
     Sensor* mSensor;                 
     QComboBox* mTypeCombo;           
     QFormLayout* mForm;              
-    QVector<QDoubleSpinBox*> mParamEditors;   
+    QVector<QScrollBar*> mParamEditors;   
 };
 

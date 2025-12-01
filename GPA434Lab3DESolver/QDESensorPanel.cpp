@@ -15,22 +15,10 @@
 
 QDESensorPanel::QDESensorPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer }
-	, mObstaclesScrollBar{}
-	, mPeaksScrollBar{}
-	, mPolygonSelectionBox{ new QComboBox }
-	, mShape{}
-	, mBuilders{
-		  new CircleSensor,
-		  new SweepSensor,
-		  new CurtainSensor
-	}
 	, mSensorCountSpin{ new QSpinBox }
 	, mSensorListLayout{ new QVBoxLayout }
-	, mSensors{}
 {
-	setupGUI();
 	assemblingAndLayouting();
-	establishConnections();
 }
 
 QDESensorPanel::~QDESensorPanel()
@@ -44,84 +32,6 @@ de::SolutionStrategy* QDESensorPanel::buildSolution() const
 		1.0, QVector<QPointF>() );
 }
 
-void QDESensorPanel::updateVisualization(QDEAdapter const& de)
-{
-	int w{ mVisualizationLabel->width() };
-	int h{ mVisualizationLabel->height() };
-
-	QImage img(w, h, QImage::Format_RGB32);
-	QPainter painter(&img);
-
-	painter.setRenderHint(QPainter::Antialiasing, true);
-
-	painter.fillRect(img.rect(), QColor(32, 32, 48));
-
-
-
-	QPen polyPen(Qt::yellow);
-	polyPen.setWidth(1);
-
-	QColor polyFillColor(Qt::yellow);
-	polyFillColor.setAlpha(95);
-
-	painter.setPen(polyPen);
-	painter.setBrush(polyFillColor);
-	painter.setOpacity(1.0);
-
-	painter.drawPath(computePreviewPath());
-	
-	QPen bodyPen(Qt::red);
-	bodyPen.setWidth(1);
-
-	QColor bodyFillColor(Qt::red);
-
-	painter.setPen(bodyPen);
-	painter.setBrush(bodyFillColor);
-	painter.setOpacity(1.0);
-	painter.drawPath(computePreviewBodyPath());
-	painter.end();
-
-	mVisualizationLabel->setImage(img);
-}
-
-
-void QDESensorPanel::updateShape()
-{
-	int index{ mPolygonSelectionBox->currentIndex() };
-
-	mBuilders[index]->setRange(mPeaksScrollBar->value());
-	mShape = mBuilders[index]->coveragePath();
-
-	parameterChanged();
-}
-
-QHBoxLayout* QDESensorPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
-	int maxRange, int minWidth)
-{
-	sb = new QScrollBar(Qt::Horizontal);
-	sb->setRange(minRange, maxRange);
-	sb->setMinimumWidth(minWidth);
-	sb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-
-	QLabel* label{ new QLabel(QString::number(sb->value())) };
-	label->setFixedWidth(20);
-
-	QHBoxLayout* layout{ new QHBoxLayout };
-	layout->addWidget(sb);
-	layout->addWidget(label);
-
-	connect(sb, &QScrollBar::valueChanged,
-		label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
-
-	return layout;
-}
-
-void QDESensorPanel::setupGUI()
-{
-	for (Sensor* builder : mBuilders)
-		mPolygonSelectionBox->addItem(builder->name());
-}
-
 void QDESensorPanel::assemblingAndLayouting()
 {
 	mSensorCountSpin->setRange(1, 50);
@@ -130,93 +40,85 @@ void QDESensorPanel::assemblingAndLayouting()
 	connect(mSensorCountSpin, QOverload<int>::of(&QSpinBox::valueChanged),
 		this, &QDESensorPanel::onSensorCountChanged);
 
+	QVBoxLayout* listLayout = mSensorListLayout;
 
-	mSensorListLayout = new QVBoxLayout;
-	mSensorListLayout->setSpacing(6);
+	QWidget* listWidget = new QWidget;
+	listWidget->setLayout(listLayout);
 
-	QWidget* sensorListWidget = new QWidget;
-	sensorListWidget->setLayout(mSensorListLayout);
+	QScrollArea* scroll = new QScrollArea;
+	scroll->setWidget(listWidget);
+	scroll->setWidgetResizable(true);
+	scroll->setFixedHeight(100);
 
-	QScrollArea* sensorScrollArea = new QScrollArea;
-	sensorScrollArea->setWidget(sensorListWidget);
-	sensorScrollArea->setWidgetResizable(true);
-	sensorScrollArea->setMinimumHeight(220);   
-	sensorScrollArea->setFrameShape(QFrame::NoFrame);
+	QFormLayout* form = new QFormLayout;
+	form->addRow("Nombre de capteurs :", mSensorCountSpin);
+	form->addRow("Configuration des capteurs :", scroll);
 
-	// Regrouper capteurs
-	QFormLayout* sensorForm = new QFormLayout;
-	sensorForm->addRow("Nombre de capteurs :", mSensorCountSpin);
-	sensorForm->addRow("Configuration des capteurs :", sensorScrollArea);
+	QGroupBox* group = new QGroupBox("Capteurs");
+	group->setLayout(form);
 
-	QGroupBox* sensorGroup = new QGroupBox("Capteurs");
-	sensorGroup->setLayout(sensorForm);
-
-	QVBoxLayout* mainLayout = new QVBoxLayout;
-	mainLayout->addWidget(sensorGroup);
-
-	mainLayout->addWidget(mVisualizationLabel, 1);
+	QVBoxLayout* main = new QVBoxLayout;
+	main->addWidget(group);
+	main->addWidget(mVisualizationLabel, 1);
 
 	rebuildSensorList();
-	setLayout(mainLayout);
+	parameterChanged();
+
+	setLayout(main);
 }
 
-void QDESensorPanel::establishConnections()
+void QDESensorPanel::updateVisualization(QDEAdapter const&)
 {
-	connect(mPolygonSelectionBox, &QComboBox::currentIndexChanged,
-		this, &QDESensorPanel::updateShape);
+	int w = mVisualizationLabel->width();
+	int h = mVisualizationLabel->height();
 
-	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
-		this, &QDESensorPanel::updateShape);
+	QImage img(w, h, QImage::Format_RGB32);
+	QPainter p(&img);
+	p.setRenderHint(QPainter::Antialiasing);
 
-}
+	p.fillRect(img.rect(), QColor(32, 32, 48));
 
-QPainterPath QDESensorPanel::computePreviewPath() const
-{
-	QPainterPath poly{ mShape };
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
+	QVector<Sensor*> sensors = collectSensors();
+	int n = sensors.size();
+	if (n == 0) {
+		mVisualizationLabel->setImage(img);
+		return;
+	}
 
-	QRectF bounds{ poly.boundingRect() };
-	double scaleX{ (canvasWidth * 0.3) / bounds.width() };
-	double scaleY{ (canvasHeight * 0.3) / bounds.height() };
+	double spacing = w / (n + 1.0);
+	double y = h / 2.0;
 
-	QTransform t;
-	t.translate(canvasWidth / 2, canvasHeight / 2);
+	for (int i = 0; i < n; ++i)
+	{
+		double x = spacing * (i + 1);
+		QPointF pos(x, y);
 
-	return t.map(poly);
-}
+		p.save();
+		p.translate(pos);
 
-QPainterPath QDESensorPanel::computePreviewBodyPath() const
-{
-	int index{ mPolygonSelectionBox->currentIndex() };
+		p.setBrush(QColor(255, 255, 0, 80));    
+		p.setPen(Qt::yellow);
+		p.drawPath(sensors[i]->coveragePath());
 
-	QPainterPath poly{ mBuilders[index]->bodyPath() };
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
+		p.setBrush(Qt::red);                    
+		p.setPen(Qt::red);
+		p.drawPath(sensors[i]->bodyPath());
 
-	QRectF bounds{ poly.boundingRect() };
-	double scaleX{ (canvasWidth * 0.3) / bounds.width() };
-	double scaleY{ (canvasHeight * 0.3) / bounds.height() };
+		p.restore();
+	}
 
-	QTransform t;
-	t.translate(canvasWidth / 2, canvasHeight / 2);
-
-	return t.map(poly);
+	mVisualizationLabel->setImage(img);
 }
 
 void QDESensorPanel::clearSensorList()
 {
 	QLayoutItem* item;
-	while ((item = mSensorListLayout->takeAt(0)) != nullptr) {
+	while ((item = mSensorListLayout->takeAt(0)) != nullptr)
+	{
 		if (QWidget* w = item->widget())
 			w->deleteLater();
 		delete item;
 	}
-
-	// supprimer les capteurs existants
-	for (Sensor* s : mSensors)
-		delete s;
-	mSensors.clear();
 }
 
 void QDESensorPanel::rebuildSensorList()
@@ -224,24 +126,34 @@ void QDESensorPanel::rebuildSensorList()
 	clearSensorList();
 
 	int count = mSensorCountSpin->value();
-	mSensors.reserve(count);
 
 	for (int i = 0; i < count; ++i)
 	{
-		// Sensor par défaut = CircleSensor
-		Sensor* s = new CircleSensor;
-		mSensors.push_back(s);
-
-		// Ajouter le widget de configuration
-		SensorConfigWidget* widget = new SensorConfigWidget(s);
+		SensorConfigWidget* widget = new SensorConfigWidget(new CircleSensor);
 		mSensorListLayout->addWidget(widget);
 
-		// Repaint sur changement
 		connect(widget, &SensorConfigWidget::sensorChanged,
 			this, &QDESensorPanel::parameterChanged);
 	}
 
 	mSensorListLayout->addStretch();
+}
+
+QVector<Sensor*> QDESensorPanel::collectSensors() const
+{
+	QVector<Sensor*> list;
+
+	for (int i = 0; i < mSensorListLayout->count(); ++i)
+	{
+		QWidget* w = mSensorListLayout->itemAt(i)->widget();
+		if (!w) continue;
+
+		auto cfg = qobject_cast<SensorConfigWidget*>(w);
+		if (cfg)
+			list.append(cfg->sensor());
+	}
+
+	return list;
 }
 
 void QDESensorPanel::onSensorCountChanged(int)

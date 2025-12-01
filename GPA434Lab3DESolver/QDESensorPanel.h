@@ -26,27 +26,16 @@ public:
 
 public slots:
 	void updateVisualization(QDEAdapter const& de) override;
-	void updateShape();
 	void onSensorCountChanged(int);
 
 private:
-	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange, int minWidth);
-	void setupGUI();
 	void assemblingAndLayouting();
-	void establishConnections();
-	QPainterPath computePreviewPath() const;
-	QPainterPath computePreviewBodyPath() const;
 	void clearSensorList();
 	void rebuildSensorList();
+	QVector<Sensor*> collectSensors() const;
 
 private:
 	QImageViewer* mVisualizationLabel;
-	QScrollBar* mObstaclesScrollBar;
-	QScrollBar* mPeaksScrollBar;
-	QComboBox* mPolygonSelectionBox;
-	QPainterPath mShape;
-	QVector<Sensor*> mBuilders;
-	QVector<Sensor*> mSensors;
 	QSpinBox* mSensorCountSpin;
 	QVBoxLayout* mSensorListLayout;
 };

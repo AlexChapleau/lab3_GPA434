@@ -3,7 +3,7 @@
 const double CurtainSensor::mBodyWith{ 2.0 };
 
 CurtainSensor::CurtainSensor(QString name, double range, double height)
-	:Sensor(name,range)
+	: Sensor(name,range)
 	, mHeight{ height }
 {
 }
@@ -25,7 +25,7 @@ void CurtainSensor::setParameter(int index, double value)
 QPainterPath CurtainSensor::coveragePath() const
 {
     QPainterPath path;
-    double halfHeight{ mHeight / 2.0 };
+    const double halfHeight{ mHeight / 2.0 };
 
     path.moveTo(0, -halfHeight);
     path.lineTo(mRange, -halfHeight);
@@ -39,6 +39,7 @@ QPainterPath CurtainSensor::coveragePath() const
 QPainterPath CurtainSensor::bodyPath() const
 {
     QPainterPath body;
+
     body.addRect(-mBodyWith / 2, -mHeight / 2, mBodyWith, mHeight);
     return body;
 }

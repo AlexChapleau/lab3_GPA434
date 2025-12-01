@@ -4,9 +4,9 @@
 SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
     : QWidget(parent)
     , mSensor(sensor)
+    , mLayout{new QVBoxLayout}
 {
-    mForm = new QFormLayout(this);
-    mForm->setSpacing(6);
+    mLayout->setSpacing(6);
 
     mTypeCombo = new QComboBox;
     mTypeCombo->addItem("Capteur Circulaire");
@@ -24,7 +24,11 @@ SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
     connect(mTypeCombo, &QComboBox::currentIndexChanged,
         this, &SensorConfigWidget::onTypeChanged);
 
-    mForm->addRow("Type :", mTypeCombo);
+    QHBoxLayout* typeRow = new QHBoxLayout;
+    typeRow->addWidget(new QLabel("Type :"));
+    typeRow->addWidget(mTypeCombo);
+
+    mLayout->addLayout(typeRow);
 
   
     rebuildParameterUI();
@@ -33,18 +37,16 @@ SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
 
 void SensorConfigWidget::rebuildParameterUI()
 {
-    while (mForm->rowCount() > 1)
+    while (mLayout->count() > 1)
     {
-        auto labelItem = mForm->itemAt(1, QFormLayout::LabelRole);
-        auto fieldItem = mForm->itemAt(1, QFormLayout::FieldRole);
+        QLayoutItem* item = mLayout->takeAt(1);
 
-        if (labelItem && labelItem->widget())
-            labelItem->widget()->deleteLater();
+        if (item->layout())
+            delete item->layout();
+        if (item->widget())
+            delete item->widget();
 
-        if (fieldItem && fieldItem->widget())
-            fieldItem->widget()->deleteLater();
-
-        mForm->removeRow(1);
+        delete item;
     }
 
     mParamEditors.clear();
@@ -54,25 +56,29 @@ void SensorConfigWidget::rebuildParameterUI()
     {
         const Sensor::Parameter& p = params[i];
 
+        QLabel* labelName = new QLabel(p.name + " :");
+
         QScrollBar* sb = new QScrollBar(Qt::Horizontal);
         sb->setRange(p.min, p.max);
         sb->setValue(p.value);
         sb->setProperty("paramIndex", i);
 
-        QLabel* label{ new QLabel(QString::number(sb->value())) };
-        label->setFixedWidth(20);
+        QLabel* labelValue = new QLabel(QString::number(sb->value()));
+        labelValue->setFixedWidth(30);
 
-        QHBoxLayout* layout{ new QHBoxLayout };
-        layout->addWidget(sb);
-        layout->addWidget(label);
+        QHBoxLayout* h = new QHBoxLayout;
+        h->addWidget(sb);
+        h->addWidget(labelValue);
 
         connect(sb, &QScrollBar::valueChanged,
-            label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+            labelValue, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
 
         connect(sb, &QScrollBar::valueChanged,
             this, &SensorConfigWidget::onParamChanged);
 
-        mForm->addRow(p.name + " :", layout);
+        mLayout->addWidget(labelName);
+        mLayout->addLayout(h);
+
         mParamEditors.push_back(sb);
     }
 }

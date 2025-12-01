@@ -37,7 +37,7 @@ private:
 private:
     Sensor* mSensor;                 
     QComboBox* mTypeCombo;           
-    QFormLayout* mForm;              
+    QVBoxLayout* mLayout;
     QVector<QScrollBar*> mParamEditors;   
 };
 

@@ -39,6 +39,7 @@ GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth,
 
 	setOptimizationStrategy(new de::OptimizationMaximization);
 	setFitnessStrategy(new de::FitnessIdentity);
+	
 }
 
 std::string GeoOptimStrategy::toString(de::Solution const& solution) const
@@ -58,6 +59,7 @@ double GeoOptimStrategy::process(de::Solution const& solution)
 	if (!isValidSolution(solution)) {
 		return 0.0;
 	}
+
 	double tx{ solution[0] };
 	double ty{ solution[1] };
 	double rotationDeg{ solution[2] };

@@ -11,7 +11,12 @@ public:
     CircleSensor& operator=(CircleSensor&&) = default;
     ~CircleSensor() = default;
 
+    QVector<Parameter> parameters() const override;
+    void setParameter(int index, double value) override;
     QPainterPath coveragePath() const override;
+    QPainterPath bodyPath() const override;
 
+private:
+    static const double smBodyRadius;
 };
 

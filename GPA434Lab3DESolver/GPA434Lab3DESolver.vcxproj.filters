@@ -134,6 +134,15 @@
     <ClCompile Include="SweepSensor.cpp">
       <Filter>Source Files\SensorUtilities</Filter>
     </ClCompile>
+    <ClCompile Include="CurtainSensor.cpp">
+      <Filter>Source Files\SensorUtilities</Filter>
+    </ClCompile>
+    <ClCompile Include="QDESensorPanel.cpp">
+      <Filter>Source Files\ProblemToSolveSubPanels</Filter>
+    </ClCompile>
+    <ClCompile Include="SensorConfigWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QImageViewer.h">
@@ -169,6 +178,9 @@
     <QtMoc Include="QDEAdapter.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="SensorConfigWidget.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QDEGeoOptimPanel.h">
@@ -200,6 +212,12 @@
     </ClInclude>
     <ClInclude Include="SweepSensor.h">
       <Filter>Header Files\SensorUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CurtainSensor.h">
+      <Filter>Header Files\SensorUtilities</Filter>
+    </ClInclude>
+    <ClInclude Include="QDESensorPanel.h">
+      <Filter>Header Files\ProblemToSolveSubPanels</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

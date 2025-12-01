@@ -1,5 +1,6 @@
 #include "GPA434Lab3DESolver.h"
 #include "QDEGeoOptimPanel.h"
+#include "QDESensorPanel.h"
 
 GPA434Lab3DESolver::GPA434Lab3DESolver(QWidget *parent)
     : QMainWindow(parent)
@@ -50,6 +51,7 @@ void GPA434Lab3DESolver::setupGUI()
     mQDESolutionTabPanel->addSolutionPanel(new QDEPeakPanel);
     mQDESolutionTabPanel->addSolutionPanel(new QDEOpenBoxPanel);
     mQDESolutionTabPanel->addSolutionPanel(new QDEGeoOptimPanel);
+    mQDESolutionTabPanel->addSolutionPanel(new QDESensorPanel);
     mQDESolutionTabPanel->setCurrentIndex(0);
     rightSplitter->addWidget(mQDESolutionTabPanel);
 

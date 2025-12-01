@@ -14,7 +14,18 @@ public:
     Sensor& operator=(Sensor&&) = default;
     virtual ~Sensor() = default;
 
+    struct Parameter {
+        QString name;
+        double  value;
+        double  min;
+        double  max;
+    };
+
+    virtual QVector<Parameter> parameters() const = 0;
+    virtual void setParameter(int index, double value) = 0;
+
     virtual QPainterPath coveragePath() const = 0;
+    virtual QPainterPath bodyPath() const = 0;
     QString name() const;
     void setRange(double range);
 

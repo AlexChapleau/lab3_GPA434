@@ -11,3 +11,7 @@ void Sensor::setRange(double range)
 	mRange = range;
 }
 
+QString Sensor::name() const
+{
+	return mName;
+}

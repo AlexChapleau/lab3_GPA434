@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CircleSensor.cpp" />
+    <ClCompile Include="CurtainSensor.cpp" />
     <ClCompile Include="GeoOptimStrategy.cpp" />
     <ClCompile Include="PolygonBuilder.cpp" />
     <ClCompile Include="QDEAdapter.cpp" />
@@ -122,6 +123,7 @@
     <ClCompile Include="QDEHistoryChartPanel.cpp" />
     <ClCompile Include="QDEOpenBoxPanel.cpp" />
     <ClCompile Include="QDEPeakPanel.cpp" />
+    <ClCompile Include="QDESensorPanel.cpp" />
     <ClCompile Include="QDESolutionPanel.cpp" />
     <ClCompile Include="QDESolutionTabPanel.cpp" />
     <ClCompile Include="QElidedLabel.cpp" />
@@ -130,6 +132,7 @@
     <ClCompile Include="RandomPolygonBuilder.cpp" />
     <ClCompile Include="RegularPolygonBuilder.cpp" />
     <ClCompile Include="Sensor.cpp" />
+    <ClCompile Include="SensorConfigWidget.cpp" />
     <ClCompile Include="StarPolygonBuilder.cpp" />
     <ClCompile Include="SweepSensor.cpp" />
     <QtRcc Include="GPA434Lab3DESolver.qrc" />
@@ -172,13 +175,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CircleSensor.h" />
+    <ClInclude Include="CurtainSensor.h" />
     <ClInclude Include="GeoOptimStrategy.h" />
     <ClInclude Include="PolygonBuilder.h" />
     <ClInclude Include="QDEGeoOptimPanel.h" />
+    <ClInclude Include="QDESensorPanel.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="RandomPolygonBuilder.h" />
     <ClInclude Include="RegularPolygonBuilder.h" />
     <ClInclude Include="Sensor.h" />
+    <QtMoc Include="SensorConfigWidget.h" />
     <ClInclude Include="StarPolygonBuilder.h" />
     <ClInclude Include="SweepSensor.h" />
   </ItemGroup>

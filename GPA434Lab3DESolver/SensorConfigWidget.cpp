@@ -29,6 +29,11 @@ SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
     rebuildParameterUI();
 }
 
+Sensor* SensorConfigWidget::sensor() const
+{ 
+    return mSensor;
+}
+
 
 void SensorConfigWidget::rebuildParameterUI()
 {

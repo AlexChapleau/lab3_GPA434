@@ -21,7 +21,7 @@ class SensorConfigWidget : public QWidget
 public:
     SensorConfigWidget(Sensor* sensor, QWidget* parent = nullptr);
 
-    Sensor* sensor() const { return mSensor; }
+    Sensor* sensor() const;
 
 signals:
     void sensorChanged();

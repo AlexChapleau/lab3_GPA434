@@ -26,13 +26,18 @@ public:
 
 public slots:
 	void updateVisualization(QDEAdapter const& de) override;
+	void updateObstacles();
 	void onSensorCountChanged(int);
+	void reset();
 
 private:
 	void assemblingAndLayouting();
+	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange);
 	void clearSensorList();
-	void rebuildSensorList();
+	void buildSensorList();
+	void establishConnections();
 	QVector<Sensor*> collectSensors() const;
+	QVector<QPointF> generateObstacles(int n) const;
 	void adjustScrollAreaHeight();
 
 private:
@@ -40,4 +45,8 @@ private:
 	QSpinBox* mSensorCountSpin;
 	QVBoxLayout* mSensorListLayout;
 	QScrollArea* mScrollArea;
+	QScrollBar* mObstaclesSB;
+	QScrollBar* mObstaclesRadiusSB;
+	QVector<QPointF> mObstacles;
+	QPushButton* mResetButton;
 };

@@ -24,7 +24,7 @@ public:
     Sensor* sensor() const { return mSensor; }
 
 signals:
-    void sensorChanged();    
+    void sensorChanged();
 
 private slots:
     void onTypeChanged(int index);
@@ -35,9 +35,8 @@ private:
     Sensor* createSensorOfType(int type) const;
 
 private:
-    Sensor* mSensor;                 
-    QComboBox* mTypeCombo;           
-    QVBoxLayout* mLayout;
-    QVector<QScrollBar*> mParamEditors;   
+    Sensor* mSensor;
+    QComboBox* mTypeSelectionBox;
+    QFormLayout* mForm;
+    QVector<QScrollBar*> mParamEditors;
 };
-

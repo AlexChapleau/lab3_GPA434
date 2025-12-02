@@ -1,4 +1,4 @@
-#include "SweepSensor.h"
+﻿#include "SweepSensor.h"
 
 #include <numbers>
 #include <QtMath>
@@ -14,7 +14,7 @@ SweepSensor::SweepSensor(QString name, double range, double angle)
 QVector<Sensor::Parameter> SweepSensor::parameters() const
 {
 	return {
-	{ "Range", mRange, 1.0, 1000.0 },
+	{ "Portée", mRange, 1.0, 1000.0 },
 	{ "Angle", mAngle, 1.0, 180.0 }
 	};
 }

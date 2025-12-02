@@ -1,4 +1,4 @@
-#include "CircleSensor.h"
+﻿#include "CircleSensor.h"
 
 
 const double CircleSensor::smBodyRadius{ 4.0 };
@@ -10,7 +10,7 @@ CircleSensor::CircleSensor(QString name, double range)
 
 QVector<Sensor::Parameter> CircleSensor::parameters() const {
     return {
-        { "Range", mRange, 20.0, 200.0 }
+        { "Portée", mRange, 20.0, 200.0 }
     };
 }
 

@@ -20,7 +20,7 @@ public:
 	QDESensorPanel(QDESensorPanel&&) = default;
 	QDESensorPanel& operator=(QDESensorPanel const&) = default;
 	QDESensorPanel& operator=(QDESensorPanel&&) = default;
-	~QDESensorPanel() override;
+	~QDESensorPanel() override = default;
 
 	de::SolutionStrategy* buildSolution() const override;
 
@@ -33,10 +33,11 @@ private:
 	void clearSensorList();
 	void rebuildSensorList();
 	QVector<Sensor*> collectSensors() const;
+	void adjustScrollAreaHeight();
 
 private:
 	QImageViewer* mVisualizationLabel;
 	QSpinBox* mSensorCountSpin;
 	QVBoxLayout* mSensorListLayout;
+	QScrollArea* mScrollArea;
 };
-

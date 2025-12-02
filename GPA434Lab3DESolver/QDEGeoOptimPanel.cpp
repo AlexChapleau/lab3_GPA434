@@ -188,7 +188,6 @@ void QDEGeoOptimPanel::establishConnections()
 	connect(mPeaksScrollBar, &QScrollBar::valueChanged,
 			this, &QDEGeoOptimPanel::updateShape);
 
-	// à discuter avec JC ou Emile
 	connect(mVisualizationLabel, &QImageViewer::resized, this, [this]() {
 		static bool firstResizeDone{ false };
 

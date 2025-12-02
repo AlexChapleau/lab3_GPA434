@@ -1,4 +1,4 @@
-#include "CurtainSensor.h"
+﻿#include "CurtainSensor.h"
 
 const double CurtainSensor::mBodyWith{ 2.0 };
 
@@ -11,8 +11,8 @@ CurtainSensor::CurtainSensor(QString name, double range, double height)
 QVector<Sensor::Parameter> CurtainSensor::parameters() const
 {
     return {
-    { "Range", mRange, 1.0, 1000.0 },
-    { "Height", mHeight, 1.0, 180.0 }
+    { "Portée", mRange, 1.0, 1000.0 },
+    { "Hauteur", mHeight, 1.0, 180.0 }
     };
 }
 

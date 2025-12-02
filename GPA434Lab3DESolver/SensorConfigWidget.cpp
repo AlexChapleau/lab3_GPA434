@@ -1,86 +1,84 @@
-#include "SensorConfigWidget.h"
+﻿#include "SensorConfigWidget.h"
 
 
 SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
     : QWidget(parent)
     , mSensor(sensor)
-    , mLayout{new QVBoxLayout}
+    , mForm{ new QFormLayout(this) }
+    , mTypeSelectionBox{ new QComboBox }
 {
-    mLayout->setSpacing(6);
 
-    mTypeCombo = new QComboBox;
-    mTypeCombo->addItem("Capteur Circulaire");
-    mTypeCombo->addItem("Capteur Conique");
-    mTypeCombo->addItem("Capteur Rideau");
+    mTypeSelectionBox->addItem("Capteur Circulaire");
+    mTypeSelectionBox->addItem("Capteur Conique");
+    mTypeSelectionBox->addItem("Capteur Rideau");
 
-    
+
     if (dynamic_cast<CircleSensor*>(sensor))
-        mTypeCombo->setCurrentIndex(0);
+        mTypeSelectionBox->setCurrentIndex(0);
     else if (dynamic_cast<SweepSensor*>(sensor))
-        mTypeCombo->setCurrentIndex(1);
+        mTypeSelectionBox->setCurrentIndex(1);
     else if (dynamic_cast<CurtainSensor*>(sensor))
-        mTypeCombo->setCurrentIndex(2);
+        mTypeSelectionBox->setCurrentIndex(2);
 
-    connect(mTypeCombo, &QComboBox::currentIndexChanged,
+    connect(mTypeSelectionBox, &QComboBox::currentIndexChanged,
         this, &SensorConfigWidget::onTypeChanged);
 
-    QHBoxLayout* typeRow = new QHBoxLayout;
-    typeRow->addWidget(new QLabel("Type :"));
-    typeRow->addWidget(mTypeCombo);
+    mForm->addRow("Type :", mTypeSelectionBox);
 
-    mLayout->addLayout(typeRow);
 
-  
     rebuildParameterUI();
 }
 
 
 void SensorConfigWidget::rebuildParameterUI()
 {
-    while (mLayout->count() > 1)
+    while (mForm->rowCount() > 1)
     {
-        QLayoutItem* item = mLayout->takeAt(1);
+        auto labelItem = mForm->itemAt(1, QFormLayout::LabelRole);
+        auto fieldItem = mForm->itemAt(1, QFormLayout::FieldRole);
 
-        if (item->layout())
-            delete item->layout();
-        if (item->widget())
-            delete item->widget();
+        if (labelItem && labelItem->widget())
+            labelItem->widget()->deleteLater();
 
-        delete item;
+        if (fieldItem && fieldItem->widget())
+            fieldItem->widget()->deleteLater();
+
+        mForm->removeRow(1);
     }
 
     mParamEditors.clear();
     auto params = mSensor->parameters();
+    QHBoxLayout* layout{ new QHBoxLayout };
 
     for (int i = 0; i < params.size(); ++i)
     {
         const Sensor::Parameter& p = params[i];
 
-        QLabel* labelName = new QLabel(p.name + " :");
-
         QScrollBar* sb = new QScrollBar(Qt::Horizontal);
+        sb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sb->setRange(p.min, p.max);
         sb->setValue(p.value);
         sb->setProperty("paramIndex", i);
 
-        QLabel* labelValue = new QLabel(QString::number(sb->value()));
-        labelValue->setFixedWidth(30);
+        QLabel* label{ new QLabel(QString::number(sb->value())) };
+        label->setFixedWidth(20);
 
-        QHBoxLayout* h = new QHBoxLayout;
-        h->addWidget(sb);
-        h->addWidget(labelValue);
+        layout->addWidget(new QLabel(p.name + " :"));
+        layout->addWidget(sb);
+        layout->addWidget(label);
+        if(params.size()>1 && (i+1) != params.size())
+            layout->addSpacing(50);
 
         connect(sb, &QScrollBar::valueChanged,
-            labelValue, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+            label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
 
         connect(sb, &QScrollBar::valueChanged,
             this, &SensorConfigWidget::onParamChanged);
 
-        mLayout->addWidget(labelName);
-        mLayout->addLayout(h);
-
+        
         mParamEditors.push_back(sb);
     }
+    mForm->addRow(layout);
 }
 
 void SensorConfigWidget::onTypeChanged(int index)
@@ -102,13 +100,13 @@ Sensor* SensorConfigWidget::createSensorOfType(int type) const
     case 1: return new SweepSensor;
     case 2: return new CurtainSensor;
     }
-    return new CircleSensor; 
+    return new CircleSensor;
 }
 
 void SensorConfigWidget::onParamChanged(int value)
 {
     QScrollBar* sb = qobject_cast<QScrollBar*>(sender());
-    if (!sb) return; 
+    if (!sb) return;
 
     int index = sb->property("paramIndex").toInt();
 

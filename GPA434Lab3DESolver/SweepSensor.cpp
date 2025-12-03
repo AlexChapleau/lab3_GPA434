@@ -14,8 +14,8 @@ SweepSensor::SweepSensor(QString name, double range, double angle)
 QVector<Sensor::Parameter> SweepSensor::parameters() const
 {
 	return {
-	{ "Portée", mRange, 1.0, 1000.0 },
-	{ "Angle", mAngle, 1.0, 180.0 }
+	{ "Portée", mRange, 200.0, 400.0 },
+	{ "Angle", mAngle, 30.0, 120.0 }
 	};
 }
 
@@ -33,7 +33,8 @@ QPainterPath SweepSensor::coveragePath() const
 	QPointF p1(mRange * std::cos(+halfAngle), mRange * std::sin(+halfAngle));
 	QPointF p2(mRange * std::cos(-halfAngle), mRange * std::sin(-halfAngle));
 
-	path.moveTo(0, 0); path.lineTo(p1);
+	path.moveTo(0, 0);
+	path.lineTo(p1);
 	path.lineTo(p2);
 	path.closeSubpath();
 
@@ -52,4 +53,9 @@ QPainterPath SweepSensor::bodyPath() const
 	body.closeSubpath();
 
 	return body;
+}
+
+Sensor* SweepSensor::clone() const
+{
+	return new SweepSensor(*this);
 }

@@ -10,7 +10,7 @@ CircleSensor::CircleSensor(QString name, double range)
 
 QVector<Sensor::Parameter> CircleSensor::parameters() const {
     return {
-        { "Portée", mRange, 20.0, 200.0 }
+        { "Portée", mRange, 100.0, 200.0 }
     };
 }
 
@@ -32,4 +32,9 @@ QPainterPath CircleSensor::bodyPath() const
     QPainterPath body;
     body.addEllipse(QPointF(0, 0), smBodyRadius, smBodyRadius);
     return body;
+}
+
+Sensor* CircleSensor::clone() const
+{
+    return new CircleSensor(*this);
 }

@@ -19,7 +19,12 @@ class SensorConfigWidget : public QWidget
     Q_OBJECT
 
 public:
-    SensorConfigWidget(Sensor* sensor, QWidget* parent = nullptr);
+    SensorConfigWidget(QWidget* parent = nullptr);
+    SensorConfigWidget(SensorConfigWidget const&) = default;
+    SensorConfigWidget(SensorConfigWidget&&) = default;
+    SensorConfigWidget& operator=(SensorConfigWidget const&) = default;
+    SensorConfigWidget& operator=(SensorConfigWidget&&) = default;
+    ~SensorConfigWidget();
 
     Sensor* sensor() const;
 
@@ -31,7 +36,10 @@ private slots:
     void onParamChanged(int value);
 
 private:
-    void rebuildParameterUI();
+    void buildUI();
+    void clearUI();
+    void setupGUI();
+    void establishConnections();
     Sensor* createSensorOfType(int type) const;
 
 private:
@@ -39,4 +47,5 @@ private:
     QComboBox* mTypeSelectionBox;
     QFormLayout* mForm;
     QVector<QScrollBar*> mParamEditors;
+    QVector<Sensor*> mTypes;
 };

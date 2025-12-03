@@ -11,8 +11,8 @@ CurtainSensor::CurtainSensor(QString name, double range, double height)
 QVector<Sensor::Parameter> CurtainSensor::parameters() const
 {
     return {
-    { "Portée", mRange, 1.0, 1000.0 },
-    { "Hauteur", mHeight, 1.0, 180.0 }
+    { "Portée", mRange, 500.0, 2000.0 },
+    { "Hauteur", mHeight, 100.0, 400.0 }
     };
 }
 
@@ -42,4 +42,9 @@ QPainterPath CurtainSensor::bodyPath() const
 
     body.addRect(-mBodyWith / 2, -mHeight / 2, mBodyWith, mHeight);
     return body;
+}
+
+Sensor* CurtainSensor::clone() const
+{
+    return new CurtainSensor(*this);
 }

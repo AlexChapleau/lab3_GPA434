@@ -5,7 +5,7 @@
 class CurtainSensor : public Sensor
 {
 public:
-    CurtainSensor(QString name = "Capteur rideau", double range = 200.0, double height = 100.0);
+    CurtainSensor(QString name = "Capteur Rideau", double range = 500.0, double height = 100.0);
     CurtainSensor(CurtainSensor const&) = default;
     CurtainSensor(CurtainSensor&&) = default;
     CurtainSensor& operator=(CurtainSensor const&) = default;
@@ -16,6 +16,7 @@ public:
     void setParameter(int index, double value) override;
     QPainterPath coveragePath() const override;
     QPainterPath bodyPath() const override;
+    Sensor* clone() const override;
 
 private:
     static const double mBodyWith;

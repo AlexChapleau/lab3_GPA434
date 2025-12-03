@@ -39,41 +39,41 @@ void QDESensorPanel::assemblingAndLayouting()
     mSensorCountSpin->setRange(2, 6);
     mSensorCountSpin->setValue(mSensorCountSpin->minimum());
 
-    QWidget* sensorWidget = new QWidget;
+	QWidget* sensorWidget{ new QWidget };
 	sensorWidget->setLayout(mSensorListLayout);
     mScrollArea->setWidget(sensorWidget);
     mScrollArea->setWidgetResizable(true);
 
-    QVBoxLayout* titlesLayout = new QVBoxLayout; 
+	QVBoxLayout* titlesLayout{ new QVBoxLayout };
 	titlesLayout->addWidget(new QLabel("Nombre de capteurs :"));
 	titlesLayout->addWidget(new QLabel("Nombre d'obstacles :"));
 	titlesLayout->addWidget(new QLabel("Rayon des obstacles :"));
 
-	QVBoxLayout* valuesLayout = new QVBoxLayout; 
+	QVBoxLayout* valuesLayout{ new QVBoxLayout };
 	valuesLayout->addWidget(mSensorCountSpin);
 
-    QHBoxLayout* obsNumValuesLayout = new QHBoxLayout;
+	QHBoxLayout* obsNumValuesLayout{ new QHBoxLayout };
 	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 30));
 	valuesLayout->addLayout(obsNumValuesLayout);
  
-    QHBoxLayout* obsRadiusLayout = new QHBoxLayout;
+	QHBoxLayout* obsRadiusLayout{ new QHBoxLayout };
 	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 10, 30));
 	valuesLayout->addLayout(obsRadiusLayout);
     
-	QHBoxLayout* localParamsLayout = new QHBoxLayout;
+	QHBoxLayout* localParamsLayout{ new QHBoxLayout };
 	localParamsLayout->addLayout(titlesLayout);
 	localParamsLayout->addSpacing(20);
 	localParamsLayout->addLayout(valuesLayout);
 
-	QGroupBox* sensorsConfigBox = new QGroupBox("Configuration des capteurs");
-	QHBoxLayout* sensorsConfigLayout = new QHBoxLayout(sensorsConfigBox);
+	QGroupBox* sensorsConfigBox{ new QGroupBox("Configuration des capteurs") };
+	QHBoxLayout* sensorsConfigLayout{ new QHBoxLayout(sensorsConfigBox) };
 
 	sensorsConfigLayout->addLayout(localParamsLayout);
 	sensorsConfigLayout->addSpacing(10);
 	sensorsConfigLayout->addWidget(mScrollArea);
 	sensorsConfigLayout->addWidget(mResetButton);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout;
+	QVBoxLayout* mainLayout{ new QVBoxLayout };
 	mainLayout->addWidget(sensorsConfigBox);
 	mainLayout->addWidget(mVisualizationLabel, 1);
 
@@ -102,8 +102,8 @@ QHBoxLayout* QDESensorPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
 
 void QDESensorPanel::updateVisualization(QDEAdapter const&)
 {
-	int w = mVisualizationLabel->width();
-	int h = mVisualizationLabel->height();
+	int w{ mVisualizationLabel->width() };
+	int h{ mVisualizationLabel->height() };
 
 	QImage img(w, h, QImage::Format_RGB32);
 	QPainter painter(&img);
@@ -113,26 +113,27 @@ void QDESensorPanel::updateVisualization(QDEAdapter const&)
 
 	painter.setBrush(Qt::lightGray);
 	painter.setOpacity(0.8);
-	qreal r = static_cast<qreal>(mObstaclesRadiusSB->value());
+	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->value()) };
+
 	for (const QPointF& pos : mObstacles)
 	{
 		painter.drawEllipse(pos, r, r);
 	}
 
+	QVector<Sensor*> sensors{ collectSensors() };
+	qsizetype n{ sensors.size() };
 
-	QVector<Sensor*> sensors = collectSensors();
-	int n = sensors.size();
 	if (n == 0) {
 		mVisualizationLabel->setImage(img);
 		return;
 	}
 
-	double spacing = w / (n + 1.0);
-	double y = h / 2.0;
+	double spacing{ w / (n + 1.0) };
+	double y{ h / 2.0 };
 
-	for (int i = 0; i < n; ++i)
+	for (int i{}; i < n; ++i)
 	{
-		double x = spacing * (i + 1);
+		double x{ spacing * (i + 1) };
 		QPointF pos(x, y);
 
 		painter.save();
@@ -201,11 +202,11 @@ void QDESensorPanel::buildSensorList()
 {
 	clearSensorList();
 
-	int count = mSensorCountSpin->value();
+	int count{ mSensorCountSpin->value() };
 
-	for (int i = 0; i < count; ++i)
+	for (int i{}; i < count; ++i)
 	{
-		SensorConfigWidget* widget = new SensorConfigWidget(new CircleSensor);
+		SensorConfigWidget* widget{ new SensorConfigWidget };
 		mSensorListLayout->addWidget(widget);
 
 		connect(widget, &SensorConfigWidget::sensorChanged,
@@ -219,11 +220,11 @@ QVector<Sensor*> QDESensorPanel::collectSensors() const
 {
 	QVector<Sensor*> list;
 
-	for (int i = 0; i < mSensorListLayout->count(); ++i)
+	for (int i{}; i < mSensorListLayout->count(); ++i)
 	{
-		QWidget* w = mSensorListLayout->itemAt(i)->widget();
+		QWidget* w{ mSensorListLayout->itemAt(i)->widget() };
 
-		auto sensorWidget = qobject_cast<SensorConfigWidget*>(w);
+		auto sensorWidget{ qobject_cast<SensorConfigWidget*>(w) };
 
 		if (sensorWidget)
 			list.append(sensorWidget->sensor());
@@ -255,52 +256,47 @@ QVector<QPointF> QDESensorPanel::generateObstacles(int n) const
 	QVector<QPointF> obs;
 	obs.reserve(n);
 
-	qreal r = static_cast<qreal>(mObstaclesRadiusSB->maximum());
-	qreal minDist = 2.0 * r;               
+	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->maximum()) };
+	qreal minDist{ 2.0 * r };
 
-	int maxTries = 1000; 
+	int maxTries{ 1000 };
 
-	for (int k = 0; k < n; ++k)
+	for (int k{}; k < n; ++k)
 	{
 		QPointF p;
-		bool goodPoint = false;
+		bool goodPoint{ false };
 
-		for (int attempt = 0; attempt < maxTries; ++attempt)
+		for (int attempt{}; attempt < maxTries; ++attempt)
 		{
-			qreal x = Random::real(r, canvasWidth - r);
-			qreal y = Random::real(r, canvasHeight - r);
+			qreal x{ Random::real(r, canvasWidth - r) };
+			qreal y{ Random::real(r, canvasHeight - r) };
 			p = QPointF(x, y);
-
 			goodPoint = true;
 
 			for (const QPointF& q : obs)
 			{
-				qreal dx = p.x() - q.x();
-				qreal dy = p.y() - q.y();
+				qreal dx{ p.x() - q.x() };
+				qreal dy{ p.y() - q.y() };
 				if (dx * dx + dy * dy < minDist * minDist)
 				{
 					goodPoint = false;
 					break;
 				}
 			}
-
 			if (goodPoint)
 				break; 
 		}
-
 		obs.push_back(p);
 	}
-
 	return obs;
 }
 
 
 void QDESensorPanel::adjustScrollAreaHeight()
 { 
-	QWidget* sensorWidget = mSensorListLayout->itemAt(0)->widget();
-	int rowHeight = sensorWidget->sizeHint().height();
-
-	int totalHeight = rowHeight + 10;
+	QWidget* sensorWidget{ mSensorListLayout->itemAt(0)->widget() };
+	int rowHeight{ sensorWidget->sizeHint().height() };
+	int totalHeight{ rowHeight + 10 };
 
 	mScrollArea->setFixedHeight(totalHeight);
 }

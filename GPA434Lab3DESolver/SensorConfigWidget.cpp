@@ -1,32 +1,27 @@
 ﻿#include "SensorConfigWidget.h"
 
 
-SensorConfigWidget::SensorConfigWidget(Sensor* sensor, QWidget* parent)
+SensorConfigWidget::SensorConfigWidget(QWidget* parent)
     : QWidget(parent)
-    , mSensor(sensor)
+    , mSensor(nullptr)
     , mForm{ new QFormLayout(this) }
     , mTypeSelectionBox{ new QComboBox }
+    , mTypes{
+          new CircleSensor,
+          new SweepSensor,
+          new CurtainSensor
+    }
 {
+    setupGUI();
+    establishConnections();
+    buildUI();
+}
 
-    mTypeSelectionBox->addItem("Capteur Circulaire");
-    mTypeSelectionBox->addItem("Capteur Conique");
-    mTypeSelectionBox->addItem("Capteur Rideau");
-
-
-    if (dynamic_cast<CircleSensor*>(sensor))
-        mTypeSelectionBox->setCurrentIndex(0);
-    else if (dynamic_cast<SweepSensor*>(sensor))
-        mTypeSelectionBox->setCurrentIndex(1);
-    else if (dynamic_cast<CurtainSensor*>(sensor))
-        mTypeSelectionBox->setCurrentIndex(2);
-
-    connect(mTypeSelectionBox, &QComboBox::currentIndexChanged,
-        this, &SensorConfigWidget::onTypeChanged);
-
-    mForm->addRow("Type :", mTypeSelectionBox);
-
-
-    rebuildParameterUI();
+SensorConfigWidget::~SensorConfigWidget()
+{
+    delete mSensor;
+    for (Sensor* s : mTypes)
+        delete s;
 }
 
 Sensor* SensorConfigWidget::sensor() const
@@ -35,43 +30,42 @@ Sensor* SensorConfigWidget::sensor() const
 }
 
 
-void SensorConfigWidget::rebuildParameterUI()
+void SensorConfigWidget::onTypeChanged(int index)
 {
-    while (mForm->rowCount() > 1)
-    {
-        auto labelItem = mForm->itemAt(1, QFormLayout::LabelRole);
-        auto fieldItem = mForm->itemAt(1, QFormLayout::FieldRole);
+    delete mSensor;
 
-        if (labelItem && labelItem->widget())
-            labelItem->widget()->deleteLater();
+    mSensor = createSensorOfType(index);
 
-        if (fieldItem && fieldItem->widget())
-            fieldItem->widget()->deleteLater();
+    buildUI();
 
-        mForm->removeRow(1);
-    }
+    emit sensorChanged();
+}
 
-    mParamEditors.clear();
-    auto params = mSensor->parameters();
+void SensorConfigWidget::buildUI()
+{
+    clearUI();
+
+    QVector<Sensor::Parameter> params{ mSensor->parameters() };
     QHBoxLayout* layout{ new QHBoxLayout };
 
-    for (int i = 0; i < params.size(); ++i)
+    for (int i{}; i < params.size(); ++i)
     {
-        const Sensor::Parameter& p = params[i];
+        const Sensor::Parameter p{ params[i] };
 
-        QScrollBar* sb = new QScrollBar(Qt::Horizontal);
+        QScrollBar* sb{ new QScrollBar(Qt::Horizontal) };
         sb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         sb->setRange(p.min, p.max);
         sb->setValue(p.value);
         sb->setProperty("paramIndex", i);
 
         QLabel* label{ new QLabel(QString::number(sb->value())) };
-        label->setFixedWidth(20);
+        label->setFixedWidth(30);
 
         layout->addWidget(new QLabel(p.name + " :"));
         layout->addWidget(sb);
         layout->addWidget(label);
-        if(params.size()>1 && (i+1) != params.size())
+
+        if (params.size() > 1 && (i + 1) != params.size())
             layout->addSpacing(50);
 
         connect(sb, &QScrollBar::valueChanged,
@@ -79,41 +73,54 @@ void SensorConfigWidget::rebuildParameterUI()
 
         connect(sb, &QScrollBar::valueChanged,
             this, &SensorConfigWidget::onParamChanged);
-
-        
-        mParamEditors.push_back(sb);
     }
     mForm->addRow(layout);
 }
 
-void SensorConfigWidget::onTypeChanged(int index)
+void SensorConfigWidget::clearUI()
 {
-    delete mSensor;
+    while (mForm->rowCount() > 1)
+    {
+        QLayoutItem* labelItem{ mForm->itemAt(1, QFormLayout::LabelRole) };
+        QLayoutItem* fieldItem{ mForm->itemAt(1, QFormLayout::FieldRole) };
 
-    mSensor = createSensorOfType(index);
+        if (labelItem && labelItem->widget()) //protection contre les nullptr
+            delete labelItem->widget();
 
-    rebuildParameterUI();
+        if (fieldItem && fieldItem->widget()) //protection contre les nullptr
+            delete fieldItem->widget();
 
-    emit sensorChanged();
+        mForm->removeRow(1);
+    }
+}
+
+void SensorConfigWidget::setupGUI()
+{
+    for (Sensor* type : mTypes)
+        mTypeSelectionBox->addItem(type->name());
+
+    mTypeSelectionBox->setCurrentIndex(0);
+    mSensor = mTypes[mTypeSelectionBox->currentIndex()]->clone();
+
+    mForm->addRow("Type :", mTypeSelectionBox);
+}
+
+void SensorConfigWidget::establishConnections()
+{
+    connect(mTypeSelectionBox, &QComboBox::currentIndexChanged,
+        this, &SensorConfigWidget::onTypeChanged);
 }
 
 Sensor* SensorConfigWidget::createSensorOfType(int type) const
 {
-    switch (type)
-    {
-    case 0: return new CircleSensor;
-    case 1: return new SweepSensor;
-    case 2: return new CurtainSensor;
-    }
-    return new CircleSensor;
+    return mTypes[type]->clone();
 }
 
 void SensorConfigWidget::onParamChanged(int value)
 {
-    QScrollBar* sb = qobject_cast<QScrollBar*>(sender());
-    if (!sb) return;
+    QScrollBar* sb{ qobject_cast<QScrollBar*>(sender()) };
 
-    int index = sb->property("paramIndex").toInt();
+    int index{ sb->property("paramIndex").toInt() };
 
     mSensor->setParameter(index, value);
 

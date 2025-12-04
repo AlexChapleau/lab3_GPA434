@@ -133,6 +133,7 @@
     <ClCompile Include="RegularPolygonBuilder.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="SensorConfigWidget.cpp" />
+    <ClCompile Include="SensorPlacementStrategy.cpp" />
     <ClCompile Include="StarPolygonBuilder.cpp" />
     <ClCompile Include="SweepSensor.cpp" />
     <QtRcc Include="GPA434Lab3DESolver.qrc" />
@@ -185,6 +186,7 @@
     <ClInclude Include="RegularPolygonBuilder.h" />
     <ClInclude Include="Sensor.h" />
     <QtMoc Include="SensorConfigWidget.h" />
+    <ClInclude Include="SensorPlacementStrategy.h" />
     <ClInclude Include="StarPolygonBuilder.h" />
     <ClInclude Include="SweepSensor.h" />
   </ItemGroup>

@@ -19,7 +19,7 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	, mPolygonSelectionBox{ new QComboBox }
 	, mResetObstaclesButton{ new QPushButton("Regénérer") }
 	, mObstacles{}
-	, mShape{}
+	, mShape{ }
 	, mShapeHistory{}
 	, mBuilders{
 		  new RegularPolygonBuilder,
@@ -27,9 +27,11 @@ QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 		  new RandomPolygonBuilder
 	}
 {
-	setupGUI();
+
 	assemblingAndLayouting();
+	setupGUI();
 	establishConnections();
+	parameterChanged();
 }
 
 QDEGeoOptimPanel::~QDEGeoOptimPanel()
@@ -147,6 +149,8 @@ void QDEGeoOptimPanel::setupGUI()
 {
 	for (PolygonBuilder* builder : mBuilders)
 		mPolygonSelectionBox->addItem(builder->name());
+
+	mShape = mBuilders[0]->buildPolygon();
 }
 
 void QDEGeoOptimPanel::assemblingAndLayouting()
@@ -193,11 +197,8 @@ void QDEGeoOptimPanel::establishConnections()
 
 		if (!firstResizeDone) {
 			firstResizeDone = true;
-
-			updateObstacles(); 
-			updateShape();     
+			updateObstacles();   
 		}
-
 		parameterChanged();
 		});
 }
@@ -210,7 +211,7 @@ QVector<QPointF> QDEGeoOptimPanel::generateObstacles(int n) const
 	QVector<QPointF> obs;
 	obs.reserve(n);
 
-	for (int i = 0; i < n; ++i)
+	for (int i{}; i < n; ++i)
 	{
 		int x{ Random::integer(0.0, canvasWidth) };
 		int y{ Random::integer(0.0, canvasHeight) };

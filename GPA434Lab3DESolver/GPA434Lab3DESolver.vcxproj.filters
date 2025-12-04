@@ -143,6 +143,9 @@
     <ClCompile Include="SensorConfigWidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SensorPlacementStrategy.cpp">
+      <Filter>Source Files\DEStrategies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QImageViewer.h">
@@ -218,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="QDESensorPanel.h">
       <Filter>Header Files\ProblemToSolveSubPanels</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorPlacementStrategy.h">
+      <Filter>Header Files\DEStrategies</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

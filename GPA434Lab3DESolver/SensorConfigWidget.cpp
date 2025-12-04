@@ -34,7 +34,7 @@ void SensorConfigWidget::onTypeChanged(int index)
 {
     delete mSensor;
 
-    mSensor = createSensorOfType(index);
+    mSensor = mTypes[index]->clone();
 
     buildUI();
 
@@ -66,7 +66,7 @@ void SensorConfigWidget::buildUI()
         layout->addWidget(label);
 
         if (params.size() > 1 && (i + 1) != params.size())
-            layout->addSpacing(50);
+            layout->addSpacing(20);
 
         connect(sb, &QScrollBar::valueChanged,
             label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
@@ -109,11 +109,6 @@ void SensorConfigWidget::establishConnections()
 {
     connect(mTypeSelectionBox, &QComboBox::currentIndexChanged,
         this, &SensorConfigWidget::onTypeChanged);
-}
-
-Sensor* SensorConfigWidget::createSensorOfType(int type) const
-{
-    return mTypes[type]->clone();
 }
 
 void SensorConfigWidget::onParamChanged(int value)

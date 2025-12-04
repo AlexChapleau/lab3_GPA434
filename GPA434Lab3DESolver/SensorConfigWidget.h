@@ -40,7 +40,6 @@ private:
     void clearUI();
     void setupGUI();
     void establishConnections();
-    Sensor* createSensorOfType(int type) const;
 
 private:
     Sensor* mSensor;

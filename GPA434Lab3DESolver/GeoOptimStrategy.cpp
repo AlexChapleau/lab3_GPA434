@@ -35,7 +35,10 @@ GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth,
 	mSolutionDomain[0].set(0, canvasWidth);
 	mSolutionDomain[1].set(0, canvasHeight);
 	mSolutionDomain[2].set(-180.0, 180.0);
-	mSolutionDomain[3].set(0.01, 500);
+
+	QRectF bounds{ polygon.boundingRect() };
+	double maxScale{ std::max(canvasWidth,canvasHeight) / std::max(bounds.width(),bounds.height()) };
+	mSolutionDomain[3].set(0.01, maxScale);
 
 	setOptimizationStrategy(new de::OptimizationMaximization);
 	setFitnessStrategy(new de::FitnessIdentity);

@@ -5,7 +5,8 @@
 class CurtainSensor : public Sensor
 {
 public:
-    CurtainSensor(QString name = "Capteur Rideau", double range = 500.0, double height = 100.0);
+    CurtainSensor(QString name = "Capteur Rideau", double range = 500.0,
+                  double width = 100.0, double orientation = 0.0);
     CurtainSensor(CurtainSensor const&) = default;
     CurtainSensor(CurtainSensor&&) = default;
     CurtainSensor& operator=(CurtainSensor const&) = default;
@@ -20,6 +21,7 @@ public:
 
 private:
     static const double mBodyWith;
-    double mHeight;
+    double mWidth;
+    double mOrientation;
 };
 

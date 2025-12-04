@@ -4,11 +4,12 @@
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <Qpainter>
+#include <QPolygonF>
 
 #include "CircleSensor.h"
 #include "SweepSensor.h"
 #include "CurtainSensor.h"
-#include "GeoOptimStrategy.h"
+#include "SensorPlacementStrategy.h"
 #include "Random.h"
 #include "SensorConfigWidget.h"
 
@@ -30,8 +31,12 @@ QDESensorPanel::QDESensorPanel(QWidget* parent)
 
 de::SolutionStrategy* QDESensorPanel::buildSolution() const
 {
-	return new GeoOptimStrategy(QPolygonF(), 1.0,
-		1.0, QVector<QPointF>());
+	QVector<Sensor*> sensors{ collectSensors() };
+	double obsRadius{ static_cast<double>(mObstaclesRadiusSB->value()) };
+	int width{ mVisualizationLabel->width() };
+	int height{ mVisualizationLabel->height() };
+
+	return new SensorPlacementStrategy(sensors, mObstacles, obsRadius, width, height);
 }
 
 void QDESensorPanel::assemblingAndLayouting()
@@ -122,11 +127,6 @@ void QDESensorPanel::updateVisualization(QDEAdapter const&)
 
 	QVector<Sensor*> sensors{ collectSensors() };
 	qsizetype n{ sensors.size() };
-
-	if (n == 0) {
-		mVisualizationLabel->setImage(img);
-		return;
-	}
 
 	double spacing{ w / (n + 1.0) };
 	double y{ h / 2.0 };

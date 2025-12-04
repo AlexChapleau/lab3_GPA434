@@ -65,9 +65,6 @@ void SensorConfigWidget::buildUI()
         layout->addWidget(sb);
         layout->addWidget(label);
 
-        if (params.size() > 1 && (i + 1) != params.size())
-            layout->addSpacing(20);
-
         connect(sb, &QScrollBar::valueChanged,
             label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
 

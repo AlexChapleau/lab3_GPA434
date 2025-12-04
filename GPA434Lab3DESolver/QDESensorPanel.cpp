@@ -73,10 +73,9 @@ void QDESensorPanel::assemblingAndLayouting()
 	QGroupBox* sensorsConfigBox{ new QGroupBox("Configuration des capteurs") };
 	QHBoxLayout* sensorsConfigLayout{ new QHBoxLayout(sensorsConfigBox) };
 
-	sensorsConfigLayout->addLayout(localParamsLayout);
-	sensorsConfigLayout->addSpacing(10);
-	sensorsConfigLayout->addWidget(mScrollArea);
-	sensorsConfigLayout->addWidget(mResetButton);
+	sensorsConfigLayout->addLayout(localParamsLayout,3);
+	sensorsConfigLayout->addWidget(mScrollArea,6);
+	sensorsConfigLayout->addWidget(mResetButton,1);
 
 	QVBoxLayout* mainLayout{ new QVBoxLayout };
 	mainLayout->addWidget(sensorsConfigBox);

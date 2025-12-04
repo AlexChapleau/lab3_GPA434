@@ -22,7 +22,7 @@ peut toucher leurs frontières.
 </p>
 ).");
 
-//domaine du scale dynamique par rapport à la forme
+
 GeoOptimStrategy::GeoOptimStrategy(QPolygonF polygon, double canvasWidth,
 								   double canvasHeight, QVector<QPointF> obstacles)
 	: SolutionStrategy(smTitle, smSummary, smDescription)

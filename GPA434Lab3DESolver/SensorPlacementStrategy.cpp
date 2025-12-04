@@ -6,6 +6,7 @@
 #include "CurtainSensor.h"
 #include "CircleSensor.h"
 
+
 const std::string SensorPlacementStrategy::smTitle("Disposition de capteurs");
 const std::string SensorPlacementStrategy::smSummary(R".(
 <p>Le problème de la disposition de capteurs consiste à trouver les positions de différents
@@ -23,6 +24,7 @@ ne voient pas derrière les obstacles).
 </p>
 ).");
 
+
 SensorPlacementStrategy::SensorPlacementStrategy(QVector<Sensor*> sensors,
 												 QVector<QPointF> obstacles,
 												 double obstaclesRadius,
@@ -36,7 +38,23 @@ SensorPlacementStrategy::SensorPlacementStrategy(QVector<Sensor*> sensors,
 	, mCanvasWidth{ canvasWidth }
 	, mCanvasHeight{ canvasHeight }
 {
+
 	mSolutionDomain.resize(dimensions());
+	int domainIndex{};
+
+	for (Sensor * sensor : mSensors) {
+
+		mSolutionDomain[domainIndex].set(0, canvasWidth); // position X
+		mSolutionDomain[domainIndex + 1].set(0, canvasHeight); // position Y
+
+		if (dynamic_cast<SweepSensor*>(sensor)) {
+			mSolutionDomain[domainIndex + 2].set(-180.0, 180.0); // rotation
+			domainIndex += 3;
+		}
+		else
+			domainIndex += 2;
+		
+	}
 }
 
 std::string SensorPlacementStrategy::toString(de::Solution const& solution) const
@@ -66,7 +84,7 @@ QVector<SensorPlacementStrategy::SensorEntry> SensorPlacementStrategy::buildCata
 int SensorPlacementStrategy::dimensions() const
 {
 	int totalDim{};
-	for (auto& entry : mCatalog)
+	for (SensorEntry entry : mCatalog)
 		totalDim += entry.dimCount;
 	return totalDim;
 }

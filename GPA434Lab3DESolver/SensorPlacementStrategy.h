@@ -7,6 +7,7 @@
 
 
 
+
 class SensorPlacementStrategy : public de::SolutionStrategy
 {
 

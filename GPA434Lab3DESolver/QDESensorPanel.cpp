@@ -135,36 +135,40 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 
 		for (Sensor* s : sensors)
 		{
+			if (!s) //retirer un warning VisualStudio pour un nullptr possible
+				continue;
 			double x{ bestSolution[i++] };
 			double y{ bestSolution[i++] };
 			double sensorRange{ s->parameters()[0].value };
-			double sensorAngle{};
+			double angle{};
 
-			QTransform T;
-			T.translate(x, y);
+			QTransform t;
+			t.translate(x, y);
 
-			if (Sensor* sweep = dynamic_cast<SweepSensor*>(s))
+			if (dynamic_cast<SweepSensor*>(s))
 			{
-				double sensorAngle = s->parameters()[1].value;
-				double angle = bestSolution[i++];
-				T.rotate(angle);
+				angle = bestSolution[i++];
+				t.rotate(angle);
 			}
+
 			painter.translate(0,0);
 
-			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), sensorAngle,
-																		mObstacles, r,
-																		w, h);
+			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), angle,
+																		   mObstacles, r,
+																		   w, h);
 			painter.setBrush(QColor(255, 255, 0, 80));
 			painter.setPen(Qt::yellow);
 			painter.drawPath(cov);
 
-			QPainterPath body = SensorCoverageUtils::buildBodyForSensor(s, QPointF(x, y), sensorAngle);
+			//painter.setBrush(QColor(255, 0, 0, 20));
+			//painter.setPen(Qt::NoPen);
+			//painter.drawPath(t.map(s->coveragePath()));
+
 			painter.setBrush(Qt::red);
 			painter.setPen(Qt::red);
-			painter.drawPath(body);
+			painter.drawPath(t.map(s->bodyPath()));
 
 			painter.restore();
-
 		}
 	}
 	else {

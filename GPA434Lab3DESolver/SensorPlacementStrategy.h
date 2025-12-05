@@ -33,6 +33,7 @@ private:
 	int dimensions() const;
 	void configParams();
 	bool isInsideCanvas(QVector<QPainterPath> const& bodyPaths) const;
+	bool isColliding(QVector<QPainterPath> const& bodyPaths) const;
 
 private:
 	static const std::string smTitle;

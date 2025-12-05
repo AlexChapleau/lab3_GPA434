@@ -9,17 +9,14 @@ SensorCoverageUtils::RayHit SensorCoverageUtils::castRay(QPointF origin, double 
     QPointF dir(qCos(angle), qSin(angle));
 
     const int steps = 50;                       
-    double step = maxDist / steps;
 
     for (int i = 1; i <= steps; i++)
     {
-        QPointF p = origin + dir * (step * i);
+        QPointF p = origin + dir * (maxDist * i / steps);
 
-        // sortie du canvas
         if (p.x() < 0 || p.x() > W || p.y() < 0 || p.y() > H)
             return { p,true };
 
-        // collision obstacle
         for (const QPointF& o : obs)
             if (QLineF(p, o).length() <= obsR)
                 return { p,true };
@@ -120,26 +117,22 @@ QPainterPath SensorCoverageUtils::buildCurtainCoverage(const CurtainSensor* s,
         pts.push_back(castRay(start, angleDeg, range, obs, obsR, W, H).point);
     }
 
+    QPointF baseLeft = pos + QPointF(-dir.y(), dir.x()) * (-half);
+    QPointF baseRight = pos + QPointF(-dir.y(), dir.x()) * (+half);
+
     QPainterPath area;
-    if (pts.isEmpty())
-        return area;
-
-    area.moveTo(pts[0]);
-
-    for (int i = 1; i < pts.size(); i++) 
-        area.lineTo(pts[i]);
- 
-    area.lineTo(pos + QPointF(-dir.y(), dir.x()) * (half));
-    area.lineTo(pos + QPointF(dir.y(), -dir.x()) * (half));
+    area.moveTo(baseLeft);          
+    for (const auto& p : pts)        
+        area.lineTo(p);
+    area.lineTo(baseRight);         
     area.closeSubpath();
     return area;
 }
 
 
-QPainterPath SensorCoverageUtils::buildCoverageForSensor(
-    Sensor* sensor, QPointF pos, double angle,
-    const QVector<QPointF>& obs, double obsR,
-    double W, double H)
+QPainterPath SensorCoverageUtils::buildCoverageForSensor(Sensor* sensor, QPointF pos, double angle,
+                                                         const QVector<QPointF>& obs, double obsR,
+                                                         double W, double H)
 {
     if (auto* c = dynamic_cast<CircleSensor*>(sensor))
         return buildCircleCoverage(c, pos, obs, obsR, W, H);
@@ -150,13 +143,6 @@ QPainterPath SensorCoverageUtils::buildCoverageForSensor(
     if (auto* t = dynamic_cast<CurtainSensor*>(sensor))
         return buildCurtainCoverage(t, pos, obs, obsR, W, H);
 
-    return QPainterPath(); // fallback
+    return QPainterPath();
 }
 
-
-QPainterPath SensorCoverageUtils::buildBodyForSensor(Sensor* s, QPointF pos, double angle)
-{
-    QTransform T; T.translate(pos.x(), pos.y());
-    T.rotate(angle);
-    return T.map(s->bodyPath());
-}

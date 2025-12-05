@@ -8,6 +8,7 @@
 #include "CircleSensor.h"
 #include <OptimizationMaximization.h>
 #include <FitnessIdentity.h>
+#include "SensorCoverageUtils.h"
 
 
 const std::string SensorPlacementStrategy::smTitle("Disposition de capteurs");
@@ -54,14 +55,15 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 {
 	size_t i{};
 
-	QVector<QPainterPath> coveragePaths;
-	coveragePaths.reserve(mSensors.size());
-
 	QVector<QPainterPath> bodyPaths;
+	
 	bodyPaths.reserve(mSensors.size());
 	
 	for (Sensor* s : mSensors)
 	{
+		if (!s) //retirer un warning VisualStudio pour un nullptr possible
+			continue;
+
 		double x{ solution[i++] };
 		double y{ solution[i++] };
 		double sensorRange{ s->parameters()[0].value };
@@ -70,23 +72,24 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 		T.translate(x, y);
 
 		double sensorAngle{};
-		if (Sensor* sweep = dynamic_cast<SweepSensor*>(s))
+		if (dynamic_cast<SweepSensor*>(s))
 		{
 			sensorAngle = s->parameters()[1].value;
 			double angle = solution[i++];
 			T.rotate(angle);
 		}
 
-		QPainterPath body = T.map(s->bodyPath());
-
-		bodyPaths.push_back(body);
+		bodyPaths.push_back(T.map(s->bodyPath()));
 	}
 
 	if (!isInsideCanvas(bodyPaths))
 		return 0.0;
+
+	if (isColliding(bodyPaths))
+		return 0.0;
 	
 
-	return 0.0;
+	return 1.0;
 }
 
 int SensorPlacementStrategy::dimensions() const
@@ -125,6 +128,29 @@ bool SensorPlacementStrategy::isInsideCanvas(QVector<QPainterPath> const& bodyPa
 		}
 	}
 	return true;
+}
+
+bool SensorPlacementStrategy::isColliding(QVector<QPainterPath> const& bodyPaths) const
+{
+	for (const QPointF& obs : mObstacles)
+	{
+		QPainterPath obsPath;
+		obsPath.addEllipse(obs, mObstaclesRadius, mObstaclesRadius);
+		for (const QPainterPath& body : bodyPaths) {
+			if (!body.intersected(obsPath).isEmpty())
+				return true;
+		}
+	}
+
+	for (int i = 0; i < bodyPaths.size(); ++i)
+	{
+		for (int j = i + 1; j < bodyPaths.size(); ++j)
+		{
+			if (!bodyPaths[i].intersected(bodyPaths[j]).isEmpty())
+				return true;
+		}
+	}
+	return false;
 }
 
 

@@ -19,6 +19,9 @@ public:
     QPainterPath bodyPath() const override;
     Sensor* clone() const override;
 
+    double width() const;
+    double orientation() const;
+
 private:
     static const double mBodyWith;
     double mWidth;

@@ -12,6 +12,7 @@
 #include "SensorPlacementStrategy.h"
 #include "Random.h"
 #include "SensorConfigWidget.h"
+#include "SensorCoverageUtils.h"
 
 QDESensorPanel::QDESensorPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer }
@@ -104,7 +105,7 @@ QHBoxLayout* QDESensorPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
 	return layout;
 }
 
-void QDESensorPanel::updateVisualization(QDEAdapter const&)
+void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 {
 	int w{ mVisualizationLabel->width() };
 	int h{ mVisualizationLabel->height() };
@@ -127,28 +128,68 @@ void QDESensorPanel::updateVisualization(QDEAdapter const&)
 	QVector<Sensor*> sensors{ collectSensors() };
 	qsizetype n{ sensors.size() };
 
-	double spacing{ w / (n + 1.0) };
-	double y{ h / 2.0 };
 
-	for (int i{}; i < n; ++i)
-	{
-		double x{ spacing * (i + 1) };
-		QPointF pos(x, y);
+	if (de.currentGeneration() > 0) {
+		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
+		size_t i{};
 
-		painter.save();
-		painter.translate(pos);
+		for (Sensor* s : sensors)
+		{
+			double x{ bestSolution[i++] };
+			double y{ bestSolution[i++] };
+			double sensorRange{ s->parameters()[0].value };
+			double sensorAngle{};
 
-		painter.setBrush(QColor(255, 255, 0, 80));
-		painter.setPen(Qt::yellow);
-		painter.drawPath(sensors[i]->coveragePath());
+			QTransform T;
+			T.translate(x, y);
 
-		painter.setBrush(Qt::red);
-		painter.setPen(Qt::red);
-		painter.drawPath(sensors[i]->bodyPath());
+			if (Sensor* sweep = dynamic_cast<SweepSensor*>(s))
+			{
+				double sensorAngle = s->parameters()[1].value;
+				double angle = bestSolution[i++];
+				T.rotate(angle);
+			}
+			painter.translate(0,0);
 
-		painter.restore();
+			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), sensorAngle,
+																		mObstacles, r,
+																		w, h);
+			painter.setBrush(QColor(255, 255, 0, 80));
+			painter.setPen(Qt::yellow);
+			painter.drawPath(cov);
+
+			QPainterPath body = SensorCoverageUtils::buildBodyForSensor(s, QPointF(x, y), sensorAngle);
+			painter.setBrush(Qt::red);
+			painter.setPen(Qt::red);
+			painter.drawPath(body);
+
+			painter.restore();
+
+		}
 	}
+	else {
+		double spacing{ w / (n + 1.0) };
+		double y{ h / 2.0 };
 
+		for (int i{}; i < n; ++i)
+		{
+			double x{ spacing * (i + 1) };
+			QPointF pos(x, y);
+
+			painter.save();
+			painter.translate(pos);
+
+			painter.setBrush(QColor(255, 255, 0, 80));
+			painter.setPen(Qt::yellow);
+			painter.drawPath(sensors[i]->coveragePath());
+
+			painter.setBrush(Qt::red);
+			painter.setPen(Qt::red);
+			painter.drawPath(sensors[i]->bodyPath());
+
+			painter.restore();
+		}
+	}
 	mVisualizationLabel->setImage(img);
 }
 

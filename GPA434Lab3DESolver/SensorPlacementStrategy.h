@@ -4,6 +4,7 @@
 #include <QVector>
 
 #include "Sensor.h"
+#include "QDESolutionPanel.h"
 
 
 
@@ -29,14 +30,9 @@ protected:
 	double process(de::Solution const& solution) override;
 
 private:
-	struct SensorEntry { 
-		Sensor* sensor;
-		int dimCount;
-	};
-
-private:
-	QVector<SensorEntry> buildCatalog() const;
 	int dimensions() const;
+	void configParams();
+	bool isInsideCanvas(QVector<QPainterPath> const& bodyPaths) const;
 
 private:
 	static const std::string smTitle;
@@ -45,7 +41,6 @@ private:
 
 	QVector<Sensor*> mSensors;
 	QVector<QPointF> mObstacles;
-	QVector<SensorEntry> mCatalog;
 	double mObstaclesRadius;
 	double mCanvasWidth;
 	double mCanvasHeight;

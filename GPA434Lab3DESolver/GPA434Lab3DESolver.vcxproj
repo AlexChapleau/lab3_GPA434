@@ -133,6 +133,7 @@
     <ClCompile Include="RegularPolygonBuilder.cpp" />
     <ClCompile Include="Sensor.cpp" />
     <ClCompile Include="SensorConfigWidget.cpp" />
+    <ClCompile Include="SensorCoverageUtils.cpp" />
     <ClCompile Include="SensorPlacementStrategy.cpp" />
     <ClCompile Include="StarPolygonBuilder.cpp" />
     <ClCompile Include="SweepSensor.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="RegularPolygonBuilder.h" />
     <ClInclude Include="Sensor.h" />
     <QtMoc Include="SensorConfigWidget.h" />
+    <ClInclude Include="SensorCoverageUtils.h" />
     <ClInclude Include="SensorPlacementStrategy.h" />
     <ClInclude Include="StarPolygonBuilder.h" />
     <ClInclude Include="SweepSensor.h" />

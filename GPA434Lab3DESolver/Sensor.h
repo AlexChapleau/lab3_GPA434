@@ -30,6 +30,7 @@ public:
 
     QString name() const;
     void setRange(double range);
+    double range() const;
 
 protected:
     double mRange;

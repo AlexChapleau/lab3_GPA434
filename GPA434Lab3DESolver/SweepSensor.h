@@ -18,6 +18,8 @@ public:
     QPainterPath bodyPath() const override;
     Sensor* clone() const override;
 
+    double angle() const;
+
 private:
     static const double smBodyLength;
     double mAngle;

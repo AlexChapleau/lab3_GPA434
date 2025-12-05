@@ -11,6 +11,11 @@ void Sensor::setRange(double range)
 	mRange = range;
 }
 
+double Sensor::range() const
+{
+	return mRange;
+}
+
 QString Sensor::name() const
 {
 	return mName;

@@ -28,14 +28,13 @@ void SweepSensor::setParameter(int index, double value)
 QPainterPath SweepSensor::coveragePath() const
 {
 	QPainterPath path;
-	const double halfAngle{ qDegreesToRadians(mAngle / 2.0) };
+	const double half = mAngle * 0.5; 
 
-	QPointF p1(mRange * std::cos(+halfAngle), mRange * std::sin(+halfAngle));
-	QPointF p2(mRange * std::cos(-halfAngle), mRange * std::sin(-halfAngle));
+	QRectF circleRect(-mRange, -mRange, 2 * mRange, 2 * mRange);
 
 	path.moveTo(0, 0);
-	path.lineTo(p1);
-	path.lineTo(p2);
+
+	path.arcTo(circleRect, -half, mAngle);
 	path.closeSubpath();
 
 	return path;
@@ -58,4 +57,9 @@ QPainterPath SweepSensor::bodyPath() const
 Sensor* SweepSensor::clone() const
 {
 	return new SweepSensor(*this);
+}
+
+double SweepSensor::angle() const
+{
+	return mAngle;
 }

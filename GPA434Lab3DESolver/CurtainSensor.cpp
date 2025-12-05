@@ -58,3 +58,13 @@ Sensor* CurtainSensor::clone() const
 {
     return new CurtainSensor(*this);
 }
+
+double CurtainSensor::width() const
+{
+    return mWidth;
+}
+
+double CurtainSensor::orientation() const
+{
+    return mOrientation;
+}

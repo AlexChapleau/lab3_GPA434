@@ -146,6 +146,9 @@
     <ClCompile Include="SensorPlacementStrategy.cpp">
       <Filter>Source Files\DEStrategies</Filter>
     </ClCompile>
+    <ClCompile Include="SensorCoverageUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QImageViewer.h">
@@ -224,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="SensorPlacementStrategy.h">
       <Filter>Header Files\DEStrategies</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorCoverageUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

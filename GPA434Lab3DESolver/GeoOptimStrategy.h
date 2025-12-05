@@ -3,7 +3,7 @@
 #include <string>
 
 #include "QDESolutionPanel.h"
-#include <SolutionStrategy.h>
+#include "SolutionStrategy.h"
 
 class GeoOptimStrategy : public de::SolutionStrategy
 {

@@ -11,6 +11,8 @@
 #include "QDESolutionPanel.h"
 #include "QImageViewer.h"
 #include "Sensor.h"
+#include "Obstacle.h"
+#include "SensorPlacementStrategy.h"
 
 class QDESensorPanel : public QDESolutionPanel
 {
@@ -37,7 +39,7 @@ private:
 	void buildSensorList();
 	void establishConnections();
 	QVector<Sensor*> collectSensors() const;
-	QVector<QPointF> generateObstacles(int n) const;
+	void generateObstacles(int n);
 	void adjustScrollAreaHeight();
 
 private:
@@ -47,6 +49,8 @@ private:
 	QScrollArea* mScrollArea;
 	QScrollBar* mObstaclesSB;
 	QScrollBar* mObstaclesRadiusSB;
-	QVector<QPointF> mObstacles;
+	QVector<Obstacle> mObstacles;
 	QPushButton* mResetButton;
+
+	mutable SensorPlacementStrategy* mCurrentStrategy = nullptr;
 };

@@ -14,6 +14,8 @@
 #include "SensorConfigWidget.h"
 #include "SensorCoverageUtils.h"
 
+
+
 QDESensorPanel::QDESensorPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer }
 	, mSensorCountSpin{ new QSpinBox }
@@ -33,16 +35,18 @@ QDESensorPanel::QDESensorPanel(QWidget* parent)
 de::SolutionStrategy* QDESensorPanel::buildSolution() const
 {
 	QVector<Sensor*> sensors{ collectSensors() };
-	double obsRadius{ static_cast<double>(mObstaclesRadiusSB->value()) };
 	int width{ mVisualizationLabel->width() };
 	int height{ mVisualizationLabel->height() };
 
-	return new SensorPlacementStrategy(sensors, mObstacles, obsRadius, width, height);
+	//delete mCurrentStrategy; // éviter fuite mémoire
+	mCurrentStrategy = new SensorPlacementStrategy(sensors, mObstacles, width, height);
+
+	return mCurrentStrategy;
 }
 
 void QDESensorPanel::assemblingAndLayouting()
 {
-    mSensorCountSpin->setRange(2, 6);
+    mSensorCountSpin->setRange(1, 3);
     mSensorCountSpin->setValue(mSensorCountSpin->minimum());
 
 	QWidget* sensorWidget{ new QWidget };
@@ -59,11 +63,11 @@ void QDESensorPanel::assemblingAndLayouting()
 	valuesLayout->addWidget(mSensorCountSpin);
 
 	QHBoxLayout* obsNumValuesLayout{ new QHBoxLayout };
-	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 30));
+	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 40));
 	valuesLayout->addLayout(obsNumValuesLayout);
  
 	QHBoxLayout* obsRadiusLayout{ new QHBoxLayout };
-	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 10, 30));
+	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 10, 40));
 	valuesLayout->addLayout(obsRadiusLayout);
     
 	QHBoxLayout* localParamsLayout{ new QHBoxLayout };
@@ -120,15 +124,15 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 	painter.setOpacity(0.8);
 	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->value()) };
 
-	for (const QPointF& pos : mObstacles)
+	for (const Obstacle& obs : mObstacles)
 	{
-		painter.drawEllipse(pos, r, r);
+		painter.drawPath(obs.shape);
 	}
 
 	QVector<Sensor*> sensors{ collectSensors() };
 	qsizetype n{ sensors.size() };
 
-
+	QVector<QPainterPath> coveragePaths;
 	if (de.currentGeneration() > 0) {
 		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
 		size_t i{};
@@ -154,11 +158,11 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 			painter.translate(0,0);
 
 			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), angle,
-																		   mObstacles, r,
-																		   w, h);
+																		   mObstacles, w, h);
 			painter.setBrush(QColor(255, 255, 0, 80));
 			painter.setPen(Qt::yellow);
 			painter.drawPath(cov);
+			coveragePaths.push_back(cov);
 
 			//painter.setBrush(QColor(255, 0, 0, 20));
 			//painter.setPen(Qt::NoPen);
@@ -170,6 +174,11 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 
 			painter.restore();
 		}
+		QPainterPath debugMask = mCurrentStrategy->debugGridMask(coveragePaths);
+
+		painter.setBrush(QColor(0, 255, 0, 80)); // cases couvertes = vert translucide
+		painter.setPen(Qt::black);
+		painter.drawPath(debugMask);
 	}
 	else {
 		double spacing{ w / (n + 1.0) };
@@ -209,7 +218,7 @@ void QDESensorPanel::establishConnections()
 		this, &QDESensorPanel::updateObstacles);
 
 	connect(mObstaclesRadiusSB, &QScrollBar::valueChanged,
-		this, &QDESensorPanel::parameterChanged);
+		this, &QDESensorPanel::updateObstacles);
 
 	connect(mVisualizationLabel, &QImageViewer::resized, this, [this]() {
 		static bool firstResizeDone{ false };
@@ -217,7 +226,7 @@ void QDESensorPanel::establishConnections()
 		if (!firstResizeDone) {
 			firstResizeDone = true;
 
-			updateObstacles();
+			generateObstacles(mObstaclesSB->value());
 			
 		}
 
@@ -227,7 +236,16 @@ void QDESensorPanel::establishConnections()
 
 void QDESensorPanel::updateObstacles()
 {
-	mObstacles = generateObstacles(mObstaclesSB->value());
+	QScrollBar* sb = qobject_cast<QScrollBar*>(sender());
+
+	if (sb == mObstaclesSB)
+		generateObstacles(mObstaclesSB->value());
+
+	else if (sb == mObstaclesRadiusSB) {
+		for (Obstacle& obs : mObstacles) 
+			obs.setRadius(static_cast<double>(mObstaclesRadiusSB->value()));
+	}
+
 	parameterChanged();
 }
 
@@ -292,13 +310,13 @@ void QDESensorPanel::reset()
 	updateObstacles();
 }
 
-QVector<QPointF> QDESensorPanel::generateObstacles(int n) const
+void QDESensorPanel::generateObstacles(int n) 
 {
 	int canvasWidth{ mVisualizationLabel->width() };
 	int canvasHeight{ mVisualizationLabel->height() };
 
-	QVector<QPointF> obs;
-	obs.reserve(n);
+	mObstacles.clear();
+	mObstacles.reserve(n);
 
 	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->maximum()) };
 	qreal minDist{ 2.0 * r };
@@ -317,10 +335,11 @@ QVector<QPointF> QDESensorPanel::generateObstacles(int n) const
 			p = QPointF(x, y);
 			goodPoint = true;
 
-			for (const QPointF& q : obs)
+			for (const Obstacle& obs : mObstacles)
 			{
-				qreal dx{ p.x() - q.x() };
-				qreal dy{ p.y() - q.y() };
+				const QPointF& center{ obs.center };
+				qreal dx{ p.x() - center.x() };
+				qreal dy{ p.y() - center.y() };
 				if (dx * dx + dy * dy < minDist * minDist)
 				{
 					goodPoint = false;
@@ -330,9 +349,9 @@ QVector<QPointF> QDESensorPanel::generateObstacles(int n) const
 			if (goodPoint)
 				break; 
 		}
-		obs.push_back(p);
+		
+		mObstacles.emplace_back(p,static_cast<double>(mObstaclesRadiusSB->value()));
 	}
-	return obs;
 }
 
 

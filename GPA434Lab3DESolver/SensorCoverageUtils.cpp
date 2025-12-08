@@ -1,45 +1,66 @@
 ﻿#include "SensorCoverageUtils.h"
 
 
-SensorCoverageUtils::RayHit SensorCoverageUtils::castRay(QPointF origin, double angleDeg,
-                                                         double maxDist, const QVector<QPointF>& obs,
-                                                         double obsR, double W, double H)
+static void updateBestT(double t, double range, double& minDist)
 {
-    double angle = qDegreesToRadians(angleDeg);
-    QPointF dir(qCos(angle), qSin(angle));
+    if (t > 0 && t < minDist && t <= range)
+        minDist = t;
+}
 
-    const int steps = 50;                       
-
-    for (int i = 1; i <= steps; i++)
-    {
-        QPointF p = origin + dir * (maxDist * i / steps);
-
-        if (p.x() < 0 || p.x() > W || p.y() < 0 || p.y() > H)
-            return { p,true };
-
-        for (const QPointF& o : obs)
-            if (QLineF(p, o).length() <= obsR)
-                return { p,true };
+static void testCanvasIntersections(const QPointF& origin, const QPointF& u,
+    double canvasWidth, double canvasHeight, double range, double& minDist)
+{
+    if (std::abs(u.x()) > 1e-9) {
+        updateBestT((0 - origin.x()) / u.x(), range, minDist);
+        updateBestT((canvasWidth - origin.x()) / u.x(), range, minDist);
     }
-    return { origin + dir * maxDist,false };
+
+    if (std::abs(u.y()) > 1e-9) {
+        updateBestT((0 - origin.y()) / u.y(), range, minDist);
+        updateBestT((canvasHeight - origin.y()) / u.y(), range, minDist);
+    }
 }
 
 
-QPainterPath SensorCoverageUtils::buildCircleCoverage(const CircleSensor* s,
-                                                      QPointF pos,
-                                                      const QVector<QPointF>& obs, double obsR,
-                                                      double W, double H)
+QPointF SensorCoverageUtils::castRay(QPointF origin, double radAngle, double range, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight)
+{
+    QPointF u(qCos(radAngle), qSin(radAngle));   
+
+    double minDist{ range };
+
+    if (u.x() * minDist > canvasWidth || u.x() * minDist < 0 || u.y() * minDist > canvasHeight || u.y() * minDist < 0)
+        testCanvasIntersections(origin, u, canvasWidth, canvasHeight, range, minDist);
+
+    for (const Obstacle& obs : obstacles)
+    {
+        const double dx = origin.x() - obs.center.x();
+        const double dy = origin.y() - obs.center.y();
+
+        const double b = 2.0 * (dx * u.x() + dy * u.y());
+        const double c = dx * dx + dy * dy - obs.radius * obs.radius;
+        const double disc = b * b - 4.0 * c;
+
+        if (disc < 0) continue;       
+
+        const double t = (-b - std::sqrt(disc)) * 0.5;
+        updateBestT(t, range, minDist);
+    }
+
+    return  origin + u * minDist;
+}
+
+QPainterPath SensorCoverageUtils::buildCircleCoverage(const CircleSensor* sensor, QPointF sensorPos, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight)
 {
     QPainterPath area;
-    const double R = s->range();
-                      
-    QVector<QPointF> pts;
-    pts.reserve(360);
+    const double range{ sensor->range() };
 
-    for (int i = 0; i < 360; i ++)
+    QVector<QPointF> pts;
+    pts.reserve(90);
+
+    for (int i{}; i < 72; i++)
     {
-        RayHit h = castRay(pos, i, R, obs, obsR, W, H);
-        pts.push_back(h.point);
+        QPointF h{ castRay(sensorPos, qDegreesToRadians(5*i), range, obstacles, canvasWidth, canvasHeight) };
+        pts.push_back(h);
     }
 
     if (pts.isEmpty())
@@ -47,102 +68,96 @@ QPainterPath SensorCoverageUtils::buildCircleCoverage(const CircleSensor* s,
 
     area.moveTo(pts[0]);
 
-    for (int k = 1; k < pts.size(); k++)
-        area.lineTo(pts[k]);
+    for (const QPointF& pt : pts)
+        area.lineTo(pt);
 
     area.closeSubpath();
     return area;
 }
 
-
-QPainterPath SensorCoverageUtils::buildSweepCoverage(const SweepSensor* s,
-                                                     QPointF pos, double ori,
-                                                     const QVector<QPointF>& obs, double obsR,
-                                                     double W, double H)
+QPainterPath SensorCoverageUtils::buildSweepCoverage(const SweepSensor* sensor, QPointF sensorPos, double sensorOri, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight)
 {
-
     QPainterPath area;
 
-    double half = s->angle() * 0.5; 
-    double R = s->range();
-    int rays = 100;
+    double half{ sensor->angle() / 2.0 };
+    double range{ sensor->range() };
+    const int rays = std::max(30, static_cast<int>(sensor->angle()));
 
     QVector<QPointF> pts;
     pts.reserve(rays);
 
-    for (int k = 0; k <= rays; k++)
+    for (int i{}; i < rays; i++)
     {
-        double a = ori - half + (2 * half) * (double(k) / rays);
-        QPointF hit = castRay(pos, a, R, obs, obsR, W, H).point;
+        double t = static_cast<double>(i) / (rays - 1);
+        double angDeg = sensorOri - half + 2 * half * t;
+        QPointF hit{ castRay(sensorPos, qDegreesToRadians(angDeg), range, obstacles, canvasWidth, canvasHeight) };
         pts.push_back(hit);
     }
 
     if (pts.isEmpty())
         return area;
 
-    area.moveTo(pos);
-    for (auto& p : pts)
-        area.lineTo(p);
+    area.moveTo(sensorPos);
+
+    for (const QPointF& pt : pts)
+        area.lineTo(pt);
+
     area.closeSubpath();
     return area;
 }
 
-
-QPainterPath SensorCoverageUtils::buildCurtainCoverage(const CurtainSensor* s,
-                                                       QPointF pos,
-                                                       const QVector<QPointF>& obs, double obsR,
-                                                       double W, double H)
+QPainterPath SensorCoverageUtils::buildCurtainCoverage(const CurtainSensor* sensor, QPointF sensorPos, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight)
 {
     QVector<QPointF> pts;
-    double half = s->width() / 2.0;
-    double range = s->range();
+    const double half{ sensor->width() / 2.0 };
+    const double range{ sensor->range() };
 
-    // direction selon orientation param  
     // 0 = X+, 1 = Y+, 2 = X-, 3 = Y-
     QPointF dir;
-    switch ((int)s->orientation()) {
+    switch (static_cast<int>(sensor->orientation())) {
     case 0: dir = { 1,0 }; break;
     case 1: dir = { 0,1 }; break;
     case 2: dir = { -1,0 }; break;
     default:dir = { 0,-1 }; break;
     }
 
-    double angleDeg = 90.0*s->orientation();
-    const int rays = static_cast<int>(s->width());
-    for (int i = 0; i < rays; i++)
-    {
-        double shift = -half + s->width() * i / rays;
-        QPointF start = pos + QPointF(-dir.y(), dir.x()) * shift; 
+    const double angle{ qDegreesToRadians(90.0 * sensor->orientation()) };
+    const int rays{ static_cast<int>(half/4.0)};
 
-        pts.push_back(castRay(start, angleDeg, range, obs, obsR, W, H).point);
+    for (int i{}; i < rays; i++)
+    {
+        double shift{ -half + sensor->width() * static_cast<double>(i) / rays };
+        QPointF start{ sensorPos + QPointF(-dir.y(), dir.x()) * shift };
+
+        pts.push_back(castRay(start, angle, range, obstacles, canvasWidth, canvasHeight));
     }
 
-    QPointF baseLeft = pos + QPointF(-dir.y(), dir.x()) * (-half);
-    QPointF baseRight = pos + QPointF(-dir.y(), dir.x()) * (+half);
+    QPointF baseLeft{ sensorPos + QPointF(-dir.y(), dir.x()) * -half };
+    QPointF baseRight{ sensorPos + QPointF(-dir.y(), dir.x()) * half };
 
     QPainterPath area;
-    area.moveTo(baseLeft);          
-    for (const auto& p : pts)        
+
+    area.moveTo(baseLeft);
+
+    for (const QPointF& p : pts)
         area.lineTo(p);
-    area.lineTo(baseRight);         
+
+    area.lineTo(baseRight);
     area.closeSubpath();
+
     return area;
 }
 
-
-QPainterPath SensorCoverageUtils::buildCoverageForSensor(Sensor* sensor, QPointF pos, double angle,
-                                                         const QVector<QPointF>& obs, double obsR,
-                                                         double W, double H)
+QPainterPath SensorCoverageUtils::buildCoverageForSensor(Sensor* sensor, QPointF sensorPos, double sensorAngle, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight)
 {
-    if (auto* c = dynamic_cast<CircleSensor*>(sensor))
-        return buildCircleCoverage(c, pos, obs, obsR, W, H);
+    if (CircleSensor* c = dynamic_cast<CircleSensor*>(sensor))
+        return buildCircleCoverage(c, sensorPos, obstacles, canvasWidth, canvasHeight);
 
-    if (auto* s = dynamic_cast<SweepSensor*>(sensor))
-        return buildSweepCoverage(s, pos, angle, obs, obsR, W, H);
+    if (SweepSensor* s = dynamic_cast<SweepSensor*>(sensor))
+        return buildSweepCoverage(s, sensorPos, sensorAngle, obstacles, canvasWidth, canvasHeight);
 
-    if (auto* t = dynamic_cast<CurtainSensor*>(sensor))
-        return buildCurtainCoverage(t, pos, obs, obsR, W, H);
+    if (CurtainSensor* t = dynamic_cast<CurtainSensor*>(sensor))
+        return buildCurtainCoverage(t, sensorPos, obstacles, canvasWidth, canvasHeight);
 
     return QPainterPath();
 }
-

@@ -12,7 +12,7 @@ CurtainSensor::CurtainSensor(QString name, double range, double width, double or
 QVector<Sensor::Parameter> CurtainSensor::parameters() const
 {
     return {
-    { "Portée", mRange, 500.0, 2000.0 },
+    { "Portée", mRange, 500.0, 1000.0 },
     { "Largeur", mWidth, 100.0, 400.0 },
     { "Direction", mOrientation, 0.0, 3.0} // 0 = X+, 1 = Y+, 2 = X-, 3 = Y-
     };

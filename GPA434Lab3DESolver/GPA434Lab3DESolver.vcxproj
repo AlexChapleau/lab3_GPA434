@@ -179,6 +179,7 @@
     <ClInclude Include="CircleSensor.h" />
     <ClInclude Include="CurtainSensor.h" />
     <ClInclude Include="GeoOptimStrategy.h" />
+    <ClInclude Include="Obstacle.h" />
     <ClInclude Include="PolygonBuilder.h" />
     <ClInclude Include="QDEGeoOptimPanel.h" />
     <ClInclude Include="QDESensorPanel.h" />

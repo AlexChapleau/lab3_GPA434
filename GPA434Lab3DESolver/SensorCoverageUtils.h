@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QtMath>
 
+#include "Obstacle.h"
 #include "Sensor.h"
 #include "CircleSensor.h"
 #include "SweepSensor.h"
@@ -12,28 +13,23 @@
 
 namespace SensorCoverageUtils {
 
-    struct RayHit {
-        QPointF point;    
-        bool collision;     
-    };
 
-    RayHit castRay(QPointF origin, double angleDeg, double maxDist, const QVector<QPointF>& obstacles,
-                   double obstacleRadius, double canvasWidth, double canvasHeight);
+    QPointF castRay(QPointF origin, double radAngle, double range, const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight);
 
-    QPainterPath buildCircleCoverage(const CircleSensor* s, QPointF pos, const QVector<QPointF>& obstacles,
-                                     double obsR,double canvasW, double canvasH);
+    QPainterPath buildCircleCoverage(const CircleSensor* sensor, QPointF sensorPos, const QVector<Obstacle>& obstacles,
+                                     double canvasWidth, double canvasHeight);
 
-    QPainterPath buildSweepCoverage(const SweepSensor* s, QPointF pos, double orientation,
-                                    const QVector<QPointF>& obstacles, double obsR, double canvasW, double canvasH);
+    QPainterPath buildSweepCoverage(const SweepSensor* sensor, QPointF sensorPos, double sensorOri,
+                                    const QVector<Obstacle>& obstacles, double canvasWidth, double canvasHeight);
 
-    QPainterPath buildCurtainCoverage(const CurtainSensor* s,
-        QPointF pos,
-        const QVector<QPointF>& obstacles, double obsR,
-        double canvasW, double canvasH);
+    QPainterPath buildCurtainCoverage(const CurtainSensor* sensor,
+                                      QPointF sensorPos,
+                                      const QVector<Obstacle>& obstacles,
+                                      double canvasWidth, double canvasHeight);
 
-    QPainterPath buildCoverageForSensor(Sensor* sensor, QPointF pos, double angle,
-        const QVector<QPointF>& obstacles, double obsR,
-        double canvasW, double canvasH);
+    QPainterPath buildCoverageForSensor(Sensor* sensor, QPointF sensorPos, double sensorAngle,
+                                        const QVector<Obstacle>& obstacles,
+                                        double canvasWidth, double canvasHeight);
 
 }
 

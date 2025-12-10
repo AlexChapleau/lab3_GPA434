@@ -29,7 +29,7 @@ public:
 public slots:
 	void updateVisualization(QDEAdapter const& de) override;
 	void updateObstacles();
-	void onSensorCountChanged(int);
+	void onSensorCountChanged();
 	void reset();
 
 private:
@@ -52,5 +52,5 @@ private:
 	QVector<Obstacle> mObstacles;
 	QPushButton* mResetButton;
 
-	mutable SensorPlacementStrategy* mCurrentStrategy = nullptr;
+	//mutable SensorPlacementStrategy* mCurrentStrategy = nullptr;
 };

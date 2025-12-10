@@ -48,14 +48,14 @@ SensorPlacementStrategy::SensorPlacementStrategy(QVector<Sensor*> sensors,
 std::string SensorPlacementStrategy::toString(de::Solution const& solution) const
 {
 	return std::format(R"...(
-
--Valeur Fitness : {:0.6f})...", solution.fitness());
+-Espace disponible couvert : {:0.2f} %
+-Valeur Fitness : {:0.6f})...", solution.fitness()*100.0, solution.fitness());
 }
 
 double SensorPlacementStrategy::process(de::Solution const& solution)
 {
-	size_t i{};
-
+	int i{};
+	mGrid.reset();
 	QVector<QPainterPath> bodyPaths;
 	QVector<QPainterPath> coveragePaths;
 	
@@ -70,25 +70,24 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 		double y{ solution[i++] };
 		double sensorRange{ sensor->parameters()[0].value };
 
-		QTransform T;
-		T.translate(x, y);
+		QTransform t;
+		t.translate(x, y);
 
-		double sensorAngle{};
+		double angle{};
 		if (dynamic_cast<SweepSensor*>(sensor))
 		{
-			sensorAngle = sensor->parameters()[1].value;
-			double angle = solution[i++];
-			T.rotate(angle);
+			angle = solution[i++];
+			t.rotate(angle);
 		}
 
-		bodyPaths.push_back(T.map(sensor->bodyPath()));
+		bodyPaths.push_back(t.map(sensor->bodyPath()));
 
 		QPainterPath covPath = SensorCoverageUtils::buildCoverageForSensor(sensor, QPointF(x, y),
-																		   sensorAngle,mObstacles,
+																		   angle,mObstacles,
 																		   mCanvasWidth, mCanvasHeight);
-		QPainterPath canvas;
-		canvas.addRect(0, 0, mCanvasWidth, mCanvasHeight);
-		covPath = covPath.intersected(canvas);
+		//QPainterPath canvas;
+		//canvas.addRect(0, 0, mCanvasWidth, mCanvasHeight);
+		//covPath = covPath.intersected(canvas);
 		coveragePaths.push_back(covPath);
 	}
 
@@ -98,10 +97,10 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 	if (isColliding(bodyPaths))
 		return 0.0;
 
-	double coveredArea{ computeCoverageArea(coveragePaths) };
-	double totalArea{ mCanvasHeight * mCanvasWidth };
+	qsizetype coveredCell{ computeCoverageArea(coveragePaths) };
+	qsizetype totalCell{ mGrid.cellShape.size() };
 
-	return coveredArea/ totalArea;
+	return static_cast<double>(coveredCell) / static_cast<double>(totalCell);
 }
 
 int SensorPlacementStrategy::dimensions() const
@@ -123,7 +122,7 @@ void SensorPlacementStrategy::configParams()
 		mSolutionDomain[domainIndex++].set(0, mCanvasHeight); // position Y
 
 		if (dynamic_cast<SweepSensor*>(sensor)) {
-			mSolutionDomain[domainIndex++].set(-180.0, 180.0); // rotation
+			mSolutionDomain[domainIndex++].set(0.0, 360.0); // rotation
 		}
 	}
 	setOptimizationStrategy(new de::OptimizationMaximization);
@@ -148,7 +147,11 @@ bool SensorPlacementStrategy::isColliding(QVector<QPainterPath> const& bodyPaths
 
 		const QPainterPath& shape{ obs.shape };
 
+		QRectF obsB{ shape.boundingRect() };
+
 		for (const QPainterPath& body : bodyPaths) {
+			if (!body.boundingRect().intersects(obsB))
+				continue;
 			if (!body.intersected(shape).isEmpty())
 				return true;
 		}
@@ -165,9 +168,10 @@ bool SensorPlacementStrategy::isColliding(QVector<QPainterPath> const& bodyPaths
 
 void SensorPlacementStrategy::buildGrid()
 {
-	int rows = std::ceil(mCanvasHeight / smCellSize);
-	int cols = std::ceil(mCanvasWidth / smCellSize);
+	int rows{ static_cast<int>(std::floor(mCanvasHeight / smCellSize)) };
+	int cols{ static_cast<int>(std::floor(mCanvasWidth / smCellSize)) };
 
+	mGrid.cellShape.clear();
 	mGrid.cellShape.reserve(rows * cols);
 
 	for (int i{}; i < rows; i++) {
@@ -200,60 +204,80 @@ void SensorPlacementStrategy::buildGrid()
 	mGrid.covered.resize(mGrid.cellShape.size(), false);
 }
 
-double SensorPlacementStrategy::computeCoverageArea(QVector<QPainterPath> const& coveragePaths)
+qsizetype SensorPlacementStrategy::computeCoverageArea(QVector<QPainterPath> const& coveragePaths)
 {
 	mGrid.reset();
 
-	for (int c = 0; c < mGrid.cellShape.size(); ++c)
-	{
-		const QPainterPath& cell = mGrid.cellShape[c];
+	if (coveragePaths.isEmpty())
+		return 0.0;
 
-		if (mGrid.covered[c]) continue;
+	QRectF pathsBR{ coveragePaths[0].boundingRect() };
+
+	for (int i{ 1 }; i < coveragePaths.size(); ++i)
+		pathsBR = pathsBR.united(coveragePaths[i].boundingRect());
+
+	for (int c{}; c < mGrid.cellShape.size(); ++c)
+	{
+		const QPainterPath& cellPath = mGrid.cellShape[c];
+		const QRectF rect = cellPath.boundingRect();
+		const QPointF center = rect.center();
+
+		if (!pathsBR.intersects(rect))
+			continue;
 
 		for (const QPainterPath& cov : coveragePaths)
 		{
-			if (!cov.boundingRect().intersects(cell.boundingRect()))
+			if (!cov.boundingRect().intersects(rect))//beaucoup plus rapide que contains
 				continue;
-			if (cov.contains(cell.boundingRect().center())) {
-				mGrid.covered[c] = true;
-				break;
-			}
-			//if (!cov.intersected(cell).isEmpty()) 
-			//{
-			//	mGrid.covered[c] = true;
-			//	break;
-			//}
-		}
-	}
 
-	int coveredCount = std::count(mGrid.covered.begin(), mGrid.covered.end(), true);
-	double areaCovered = coveredCount * (smCellSize * smCellSize);
-
-	return areaCovered; 
-}
-
-
-QPainterPath SensorPlacementStrategy::debugGridMask(QVector<QPainterPath> const& coveragePaths)
-{
-	QPainterPath debug;
-
-	mGrid.reset();
-
-	for (int c = 0; c < mGrid.cellShape.size(); ++c)
-	{
-		const QPainterPath& cell = mGrid.cellShape[c];
-
-		for (const QPainterPath& cov : coveragePaths)
-		{
-			if (cov.boundingRect().intersects(cell.boundingRect()) &&
-				!cov.intersected(cell).isEmpty())
+			if (cov.contains(center))
 			{
 				mGrid.covered[c] = true;
-				debug.addPath(cell);          // <-- visualisation directe
 				break;
 			}
 		}
 	}
-
-	return debug;  // un path contenant chaque cellule colorée
+	return std::count(mGrid.covered.begin(), mGrid.covered.end(), true);
 }
+
+
+//QPainterPath SensorPlacementStrategy::debugGridMask(QVector<QPainterPath> const& coveragePaths)
+//{
+//	int number = 0;
+//	mGrid.reset();
+//	QPainterPath mask;
+//
+//	if (coveragePaths.isEmpty())
+//		return mask;
+//
+//	const double cellArea = smCellSize * smCellSize;
+//
+//	QRectF globalBBox = coveragePaths[0].boundingRect();
+//	for (int k = 1; k < coveragePaths.size(); ++k)
+//		globalBBox = globalBBox.united(coveragePaths[k].boundingRect());
+//
+//	for (int c = 0; c < mGrid.cellShape.size(); ++c)
+//	{
+//		const QPainterPath& cellPath = mGrid.cellShape[c];
+//		const QRectF rect = cellPath.boundingRect();
+//		const QPointF center = rect.center();
+//
+//		if (!globalBBox.intersects(rect))
+//			continue;
+//
+//		for (const QPainterPath& cov : coveragePaths)
+//		{
+//			if (!cov.boundingRect().intersects(rect))
+//				continue;
+//
+//			if (cov.contains(center))
+//			{
+//				mGrid.covered[c] = true;
+//				mask.addPath(cellPath);  
+//				number++;
+//				break;
+//			}
+//		}
+//	}
+//	return mask;
+//}

@@ -38,10 +38,9 @@ de::SolutionStrategy* QDESensorPanel::buildSolution() const
 	int width{ mVisualizationLabel->width() };
 	int height{ mVisualizationLabel->height() };
 
-	//delete mCurrentStrategy; // éviter fuite mémoire
-	mCurrentStrategy = new SensorPlacementStrategy(sensors, mObstacles, width, height);
+	//mCurrentStrategy = new SensorPlacementStrategy(sensors, mObstacles, width, height);
 
-	return mCurrentStrategy;
+	return new SensorPlacementStrategy(sensors, mObstacles, width, height);;
 }
 
 void QDESensorPanel::assemblingAndLayouting()
@@ -63,11 +62,11 @@ void QDESensorPanel::assemblingAndLayouting()
 	valuesLayout->addWidget(mSensorCountSpin);
 
 	QHBoxLayout* obsNumValuesLayout{ new QHBoxLayout };
-	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 40));
+	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 15));
 	valuesLayout->addLayout(obsNumValuesLayout);
  
 	QHBoxLayout* obsRadiusLayout{ new QHBoxLayout };
-	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 10, 40));
+	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 30, 70));
 	valuesLayout->addLayout(obsRadiusLayout);
     
 	QHBoxLayout* localParamsLayout{ new QHBoxLayout };
@@ -144,17 +143,19 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 			double x{ bestSolution[i++] };
 			double y{ bestSolution[i++] };
 			double sensorRange{ s->parameters()[0].value };
-			double angle{};
+			
 
 			QTransform t;
 			t.translate(x, y);
 
+			double angle{};
 			if (dynamic_cast<SweepSensor*>(s))
 			{
 				angle = bestSolution[i++];
 				t.rotate(angle);
 			}
 
+			qDebug() << "sensorOri =" << angle;
 			painter.translate(0,0);
 
 			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), angle,
@@ -172,13 +173,12 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 			painter.setPen(Qt::red);
 			painter.drawPath(t.map(s->bodyPath()));
 
-			painter.restore();
 		}
-		QPainterPath debugMask = mCurrentStrategy->debugGridMask(coveragePaths);
+		//QPainterPath debugMask = mCurrentStrategy->debugGridMask(coveragePaths);
 
-		painter.setBrush(QColor(0, 255, 0, 80)); // cases couvertes = vert translucide
-		painter.setPen(Qt::black);
-		painter.drawPath(debugMask);
+		//painter.setBrush(QColor(0, 255, 0, 80)); // cases couvertes = vert translucide
+		//painter.setPen(Qt::black);
+		//painter.drawPath(debugMask);
 	}
 	else {
 		double spacing{ w / (n + 1.0) };
@@ -199,7 +199,6 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 			painter.setBrush(Qt::red);
 			painter.setPen(Qt::red);
 			painter.drawPath(sensors[i]->bodyPath());
-
 			painter.restore();
 		}
 	}
@@ -295,7 +294,7 @@ QVector<Sensor*> QDESensorPanel::collectSensors() const
 	return list;
 }
 
-void QDESensorPanel::onSensorCountChanged(int)
+void QDESensorPanel::onSensorCountChanged()
 {
 	buildSensorList();
 	parameterChanged();

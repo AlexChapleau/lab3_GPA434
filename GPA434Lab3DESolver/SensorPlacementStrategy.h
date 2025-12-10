@@ -25,8 +25,8 @@ public:
 
 	DEFINE_OVERRIDE_CLONE_METHOD(SensorPlacementStrategy)
 
-public:
-	QPainterPath debugGridMask(QVector<QPainterPath> const& coveragePaths);
+//public:
+//	QPainterPath debugGridMask(QVector<QPainterPath> const& coveragePaths);
 
 protected:
 	double process(de::Solution const& solution) override;
@@ -47,7 +47,7 @@ private:
 	bool isInsideCanvas(QVector<QPainterPath> const& bodyPaths) const;
 	bool isColliding(QVector<QPainterPath> const& bodyPaths) const;
 	void buildGrid();
-	double computeCoverageArea(QVector<QPainterPath> const& coveragePaths);
+	qsizetype computeCoverageArea(QVector<QPainterPath> const& coveragePaths);
 
 private:
 	static const std::string smTitle;

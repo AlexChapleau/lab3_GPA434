@@ -84,6 +84,7 @@ void QDESensorPanel::assemblingAndLayouting()
 	QVBoxLayout* mainLayout{ new QVBoxLayout };
 	mainLayout->addWidget(sensorsConfigBox);
 	mainLayout->addWidget(mVisualizationLabel, 1);
+	mainLayout->setContentsMargins(QMargins(0, 0, 0, 0));
 
     setLayout(mainLayout);
 
@@ -155,7 +156,7 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 				t.rotate(angle);
 			}
 
-			qDebug() << "sensorOri =" << angle;
+			//qDebug() << "sensorOri =" << angle;
 			painter.translate(0,0);
 
 			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), angle,

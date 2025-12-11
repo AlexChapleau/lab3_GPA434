@@ -17,6 +17,7 @@ QImageViewer::QImageViewer(QPixmap const& image, QWidget* parent)
     , mTextColor(QColor(222, 222, 222))
 {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
 }
 
 QImageViewer::QImageViewer(QWidget* parent)

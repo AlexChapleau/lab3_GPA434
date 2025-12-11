@@ -107,7 +107,7 @@ int SensorPlacementStrategy::dimensions() const
 {
 	int totalDim{};
 	for (Sensor* sensor : mSensors) 
-		totalDim += (dynamic_cast<SweepSensor*>(sensor)) ? 3 : 2;
+		totalDim += (dynamic_cast<SweepSensor*>(sensor)) ? 3 : 2; //getter dans sensor
 	return totalDim;
 }
 
@@ -166,7 +166,7 @@ bool SensorPlacementStrategy::isColliding(QVector<QPainterPath> const& bodyPaths
 	return false;
 }
 
-void SensorPlacementStrategy::buildGrid()
+void SensorPlacementStrategy::buildGrid()//changer les qpainterPath Qrect
 {
 	int rows{ static_cast<int>(std::floor(mCanvasHeight / smCellSize)) };
 	int cols{ static_cast<int>(std::floor(mCanvasWidth / smCellSize)) };
@@ -174,8 +174,8 @@ void SensorPlacementStrategy::buildGrid()
 	mGrid.cellShape.clear();
 	mGrid.cellShape.reserve(rows * cols);
 
-	for (int i{}; i < rows; i++) {
-		for (int j{}; j < cols; j++) {
+	for (int i{}; i < rows; ++i) {
+		for (int j{}; j < cols; ++j) {
 
 			QRectF rect(j * smCellSize, i * smCellSize, smCellSize, smCellSize);
 

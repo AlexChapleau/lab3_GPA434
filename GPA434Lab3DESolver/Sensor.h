@@ -31,7 +31,7 @@ public:
     QString name() const;
     void setRange(double range);
     double range() const;
-
+    //nombre paramètres pour DE (degrés de liberté)
 protected:
     double mRange;
 

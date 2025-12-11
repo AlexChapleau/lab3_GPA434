@@ -11,6 +11,8 @@
 #include "SweepSensor.h"
 #include "CurtainSensor.h"
 
+
+//faire une classe
 namespace SensorCoverageUtils {
 
 

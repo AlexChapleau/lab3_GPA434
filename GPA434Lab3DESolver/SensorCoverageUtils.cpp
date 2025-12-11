@@ -141,7 +141,7 @@ QPainterPath SensorCoverageUtils::buildCoverageForSensor(Sensor* sensor, QPointF
         return buildCircleCoverage(c, sensorPos, obstacles, canvasWidth, canvasHeight);
 
     if (SweepSensor* s = dynamic_cast<SweepSensor*>(sensor))
-        return buildSweepCoverage(s, sensorPos, sensorAngle, obstacles, canvasWidth, canvasHeight);
+        return buildSweepCoverage(s, sensorPos, sensorAngle, obstacles, canvasWidth, canvasHeight); //fonction abstraite dans chaque classe
 
     if (CurtainSensor* t = dynamic_cast<CurtainSensor*>(sensor))
         return buildCurtainCoverage(t, sensorPos, obstacles, canvasWidth, canvasHeight);

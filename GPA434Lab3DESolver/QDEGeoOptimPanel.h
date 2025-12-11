@@ -39,12 +39,12 @@ private:
 
 private:
 	QImageViewer* mVisualizationLabel;
+	QRect mCanvas;
 	QScrollBar* mObstaclesScrollBar;
 	QScrollBar* mPeaksScrollBar;
 	QComboBox* mPolygonSelectionBox;
 	QPushButton* mResetObstaclesButton;
 	QVector<QPointF> mObstacles;
 	QPolygonF mShape;
-	QVector<QPolygonF> mShapeHistory;
 	QVector<PolygonBuilder*> mBuilders;
 };

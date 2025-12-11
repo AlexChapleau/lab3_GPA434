@@ -3,6 +3,8 @@
 #include <QPointF>
 #include <QPainterPath>
 
+//faire une classe
+//definir interface
 struct Obstacle {
 	QPointF center;
 	double radius;

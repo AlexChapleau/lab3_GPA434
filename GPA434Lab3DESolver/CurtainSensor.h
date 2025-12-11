@@ -17,13 +17,17 @@ public:
     void setParameter(int index, double value) override;
     QPainterPath coveragePath() const override;
     QPainterPath bodyPath() const override;
+    virtual int degreesOfFreedom() const override;
+    virtual QPainterPath buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles,
+                                       double canvasWidth, double canvasHeight) const override;
+    virtual bool isCollidingObs(const CircleObstacle& obs, const QTransform& t) const override;
     Sensor* clone() const override;
 
     double width() const;
     double orientation() const;
 
 private:
-    static const double mBodyWith;
+    static const double smBodyWidth;
     double mWidth;
     double mOrientation;
 };

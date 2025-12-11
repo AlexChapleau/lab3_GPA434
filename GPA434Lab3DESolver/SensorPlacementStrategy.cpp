@@ -8,7 +8,6 @@
 #include "CircleSensor.h"
 #include <OptimizationMaximization.h>
 #include <FitnessIdentity.h>
-#include "SensorCoverageUtils.h"
 
 
 const std::string SensorPlacementStrategy::smTitle("Disposition de capteurs");
@@ -32,7 +31,7 @@ ne voient pas derrière les obstacles).
 const double SensorPlacementStrategy::smCellSize{ 10.0 };
 
 SensorPlacementStrategy::SensorPlacementStrategy(QVector<Sensor*> sensors,
-												 QVector<Obstacle> obstacles,
+												 QVector<CircleObstacle> obstacles,
 												 double canvasWidth,
 												 double canvasHeight)
 	: SolutionStrategy(smTitle, smSummary, smDescription)
@@ -80,21 +79,22 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 			t.rotate(angle);
 		}
 
+		for (const CircleObstacle& obs : mObstacles) {
+			if (sensor->isCollidingObs(obs, t))
+				return 0.0;
+		}
+		coveragePaths.push_back(sensor->buildCoverage(QPointF(x, y), angle, mObstacles, mCanvasWidth, mCanvasHeight));
 		bodyPaths.push_back(t.map(sensor->bodyPath()));
+	}
 
-		QPainterPath covPath = SensorCoverageUtils::buildCoverageForSensor(sensor, QPointF(x, y),
-																		   angle,mObstacles,
-																		   mCanvasWidth, mCanvasHeight);
-		//QPainterPath canvas;
-		//canvas.addRect(0, 0, mCanvasWidth, mCanvasHeight);
-		//covPath = covPath.intersected(canvas);
-		coveragePaths.push_back(covPath);
+	for (int i{}; i < bodyPaths.size(); ++i) {
+		for (int j{ i + 1 }; j < bodyPaths.size(); ++j) {
+			if (Sensor::isCollidingSensor(bodyPaths[i], bodyPaths[j]))
+				return 0.0;
+		}
 	}
 
 	if (!isInsideCanvas(bodyPaths))
-		return 0.0;
-
-	if (isColliding(bodyPaths))
 		return 0.0;
 
 	qsizetype coveredCell{ computeCoverageArea(coveragePaths) };
@@ -106,8 +106,8 @@ double SensorPlacementStrategy::process(de::Solution const& solution)
 int SensorPlacementStrategy::dimensions() const
 {
 	int totalDim{};
-	for (Sensor* sensor : mSensors) 
-		totalDim += (dynamic_cast<SweepSensor*>(sensor)) ? 3 : 2; //getter dans sensor
+	for (Sensor* sensor : mSensors)
+		totalDim += sensor->degreesOfFreedom();
 	return totalDim;
 }
 
@@ -141,63 +141,42 @@ bool SensorPlacementStrategy::isInsideCanvas(QVector<QPainterPath> const& bodyPa
 	return true;
 }
 
-bool SensorPlacementStrategy::isColliding(QVector<QPainterPath> const& bodyPaths) const
+void SensorPlacementStrategy::buildGrid()
 {
-	for (const Obstacle& obs : mObstacles) {
-
-		const QPainterPath& shape{ obs.shape };
-
-		QRectF obsB{ shape.boundingRect() };
-
-		for (const QPainterPath& body : bodyPaths) {
-			if (!body.boundingRect().intersects(obsB))
-				continue;
-			if (!body.intersected(shape).isEmpty())
-				return true;
-		}
-	}
-
-	for (int i{}; i < bodyPaths.size(); ++i) {
-		for (int j{ i + 1 }; j < bodyPaths.size(); ++j) {
-			if (!bodyPaths[i].intersected(bodyPaths[j]).isEmpty())
-				return true;
-		}
-	}
-	return false;
-}
-
-void SensorPlacementStrategy::buildGrid()//changer les qpainterPath Qrect
-{
-	int rows{ static_cast<int>(std::floor(mCanvasHeight / smCellSize)) };
-	int cols{ static_cast<int>(std::floor(mCanvasWidth / smCellSize)) };
+	int rows = static_cast<int>(std::floor(mCanvasHeight / smCellSize));
+	int cols = static_cast<int>(std::floor(mCanvasWidth / smCellSize));
 
 	mGrid.cellShape.clear();
 	mGrid.cellShape.reserve(rows * cols);
 
-	for (int i{}; i < rows; ++i) {
-		for (int j{}; j < cols; ++j) {
+	for (int i = 0; i < rows; ++i)
+	{
+		for (int j = 0; j < cols; ++j)
+		{
+			QRectF rect(j * smCellSize,i * smCellSize,smCellSize,smCellSize);
 
-			QRectF rect(j * smCellSize, i * smCellSize, smCellSize, smCellSize);
+			bool insideObstacle = false;
 
-			QPainterPath cellPath;
-			cellPath.addRect(rect);
+			for (const CircleObstacle& obs : mObstacles)
+			{
+				const QPointF c = obs.center();
+				double r2 = obs.radius2();
 
-			bool isFullyInsideObstacle{ false };
-			for (const Obstacle& obs : mObstacles) {
+				double closestX = std::clamp(c.x(), rect.left(), rect.right());
+				double closestY = std::clamp(c.y(), rect.top(), rect.bottom());
 
-				const QPainterPath& shape{ obs.shape };
+				double dx = c.x() - closestX;
+				double dy = c.y() - closestY;
 
-				if (shape.boundingRect().intersects(rect)) { //beaucoup plus rapide que contains
-					if (shape.contains(cellPath))
-					{
-						isFullyInsideObstacle = true;
-						break;
-					}
+				if (dx * dx + dy * dy <= r2)
+				{
+					insideObstacle = true;
+					break;
 				}
 			}
 
-			if (!isFullyInsideObstacle) 
-				mGrid.cellShape.push_back(cellPath);
+			if (!insideObstacle)
+				mGrid.cellShape.push_back(rect);
 		}
 	}
 
@@ -209,25 +188,23 @@ qsizetype SensorPlacementStrategy::computeCoverageArea(QVector<QPainterPath> con
 	mGrid.reset();
 
 	if (coveragePaths.isEmpty())
-		return 0.0;
+		return 0;
 
-	QRectF pathsBR{ coveragePaths[0].boundingRect() };
-
-	for (int i{ 1 }; i < coveragePaths.size(); ++i)
+	QRectF pathsBR = coveragePaths[0].boundingRect();
+	for (int i = 1; i < coveragePaths.size(); ++i)
 		pathsBR = pathsBR.united(coveragePaths[i].boundingRect());
 
-	for (int c{}; c < mGrid.cellShape.size(); ++c)
+	for (int c = 0; c < mGrid.cellShape.size(); ++c)
 	{
-		const QPainterPath& cellPath = mGrid.cellShape[c];
-		const QRectF rect = cellPath.boundingRect();
-		const QPointF center = rect.center();
+		const QRectF& rect = mGrid.cellShape[c];
+		QPointF center = rect.center();
 
 		if (!pathsBR.intersects(rect))
 			continue;
 
 		for (const QPainterPath& cov : coveragePaths)
 		{
-			if (!cov.boundingRect().intersects(rect))//beaucoup plus rapide que contains
+			if (!cov.boundingRect().intersects(rect))
 				continue;
 
 			if (cov.contains(center))
@@ -237,7 +214,8 @@ qsizetype SensorPlacementStrategy::computeCoverageArea(QVector<QPainterPath> con
 			}
 		}
 	}
-	return std::count(mGrid.covered.begin(), mGrid.covered.end(), true);
+
+	return std::count(mGrid.covered.begin(),mGrid.covered.end(), true);
 }
 
 

@@ -1,6 +1,6 @@
 ﻿#include "CurtainSensor.h"
 
-const double CurtainSensor::mBodyWith{ 2.0 };
+const double CurtainSensor::smBodyWidth{ 2.0 };
 
 CurtainSensor::CurtainSensor(QString name, double range, double width, double orientation)
 	: Sensor(name,range)
@@ -46,12 +46,89 @@ QPainterPath CurtainSensor::bodyPath() const
 {
     QPainterPath body;
 
-    body.addRect(-mBodyWith / 2, -mWidth / 2, mBodyWith, mWidth);
+    body.addRect(-smBodyWidth / 2, -mWidth / 2, smBodyWidth, mWidth);
 
     QTransform t;
     t.rotate(90.0 * static_cast<int>(mOrientation));
 
     return t.map(body);
+}
+
+int CurtainSensor::degreesOfFreedom() const
+{
+    return 2;
+}
+
+QPainterPath CurtainSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles, double canvasWidth, double canvasHeight) const
+{
+    QVector<QPointF> pts;
+    const double half{ mWidth / 2.0 };
+    const double range{ mRange };
+
+    QPointF u;
+    switch (static_cast<int>(mOrientation)) {
+    case 0:
+        u = { 1,0 };
+        break;
+    case 1:
+        u = { 0,1 };
+        break;
+    case 2:
+        u = { -1,0 };
+        break;
+    default:
+        u = { 0,-1 };
+        break;
+    }
+
+    const double angle{ qDegreesToRadians(90.0 * mOrientation) };
+    const int rays{ static_cast<int>(half / 2.0) };
+
+    for (int i{}; i < rays; i++)
+    {
+        double shift{ -half + mWidth * static_cast<double>(i) / rays };
+        QPointF start{ pos + QPointF(-u.y(), u.x()) * shift };
+
+        pts.push_back(castRay(start, angle, range, obstacles, canvasWidth, canvasHeight));
+    }
+
+    QPointF baseLeft{ pos + QPointF(-u.y(), u.x()) * -half };
+    QPointF baseRight{ pos + QPointF(-u.y(), u.x()) * half };
+
+    QPainterPath area;
+
+    area.moveTo(baseLeft);
+
+    for (const QPointF& p : pts)
+        area.lineTo(p);
+
+    area.lineTo(baseRight);
+    area.closeSubpath();
+
+    return area;
+}
+
+bool CurtainSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t) const
+{
+    QPointF c{ t.map(QPointF(0, 0)) };
+
+    QRectF rect;
+
+    if (static_cast<int>(mOrientation) % 2 == 0)
+        rect = QRectF(c.x() - smBodyWidth * 0.5,c.y() - mWidth * 0.5,smBodyWidth,mWidth);
+    else
+        rect = QRectF(c.x() - mWidth * 0.5,c.y() - smBodyWidth * 0.5,mWidth,smBodyWidth);
+
+    double obsX{ obs.center().x() };
+    double obsY{ obs.center().y() };
+
+    double closestX{ std::clamp(obsX, rect.left(), rect.right()) };
+    double closestY{ std::clamp(obsY, rect.top(), rect.bottom()) };
+
+    double dx{ obsX - closestX };
+    double dy{ obsY - closestY };
+
+    return (dx * dx + dy * dy) < obs.radius2();
 }
 
 Sensor* CurtainSensor::clone() const

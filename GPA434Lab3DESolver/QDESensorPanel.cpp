@@ -12,12 +12,12 @@
 #include "SensorPlacementStrategy.h"
 #include "Random.h"
 #include "SensorConfigWidget.h"
-#include "SensorCoverageUtils.h"
 
 
 
 QDESensorPanel::QDESensorPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer }
+	, mCanvas(0, 0, 1500, 500)
 	, mSensorCountSpin{ new QSpinBox }
 	, mSensorListLayout{ new QVBoxLayout }
 	, mScrollArea{ new QScrollArea }
@@ -35,12 +35,10 @@ QDESensorPanel::QDESensorPanel(QWidget* parent)
 de::SolutionStrategy* QDESensorPanel::buildSolution() const
 {
 	QVector<Sensor*> sensors{ collectSensors() };
-	int width{ mVisualizationLabel->width() };
-	int height{ mVisualizationLabel->height() };
+	int canvasWidth{ mCanvas.width() };
+	int canvasHeight{ mCanvas.height() };
 
-	//mCurrentStrategy = new SensorPlacementStrategy(sensors, mObstacles, width, height);
-
-	return new SensorPlacementStrategy(sensors, mObstacles, width, height);;
+	return new SensorPlacementStrategy(sensors, mObstacles, canvasWidth, canvasHeight);;
 }
 
 void QDESensorPanel::assemblingAndLayouting()
@@ -62,7 +60,7 @@ void QDESensorPanel::assemblingAndLayouting()
 	valuesLayout->addWidget(mSensorCountSpin);
 
 	QHBoxLayout* obsNumValuesLayout{ new QHBoxLayout };
-	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 15));
+	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 20));
 	valuesLayout->addLayout(obsNumValuesLayout);
  
 	QHBoxLayout* obsRadiusLayout{ new QHBoxLayout };
@@ -111,10 +109,10 @@ QHBoxLayout* QDESensorPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
 
 void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 {
-	int w{ mVisualizationLabel->width() };
-	int h{ mVisualizationLabel->height() };
+	int canvasWidth{ mCanvas.width() };
+	int canvasHeight{ mCanvas.height() };
 
-	QImage img(w, h, QImage::Format_RGB32);
+	QImage img(canvasWidth, canvasHeight, QImage::Format_RGB32);
 	QPainter painter(&img);
 	painter.setRenderHint(QPainter::Antialiasing);
 
@@ -124,9 +122,9 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 	painter.setOpacity(0.8);
 	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->value()) };
 
-	for (const Obstacle& obs : mObstacles)
+	for (const CircleObstacle& obs : mObstacles)
 	{
-		painter.drawPath(obs.shape);
+		obs.draw(painter);
 	}
 
 	QVector<Sensor*> sensors{ collectSensors() };
@@ -159,31 +157,21 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 			//qDebug() << "sensorOri =" << angle;
 			painter.translate(0,0);
 
-			QPainterPath cov = SensorCoverageUtils::buildCoverageForSensor(s, QPointF(x,y), angle,
-																		   mObstacles, w, h);
+			QPainterPath cov = s->buildCoverage(QPointF(x,y), angle, mObstacles, canvasWidth, canvasHeight);
 			painter.setBrush(QColor(255, 255, 0, 80));
 			painter.setPen(Qt::yellow);
 			painter.drawPath(cov);
 			coveragePaths.push_back(cov);
-
-			//painter.setBrush(QColor(255, 0, 0, 20));
-			//painter.setPen(Qt::NoPen);
-			//painter.drawPath(t.map(s->coveragePath()));
 
 			painter.setBrush(Qt::red);
 			painter.setPen(Qt::red);
 			painter.drawPath(t.map(s->bodyPath()));
 
 		}
-		//QPainterPath debugMask = mCurrentStrategy->debugGridMask(coveragePaths);
-
-		//painter.setBrush(QColor(0, 255, 0, 80)); // cases couvertes = vert translucide
-		//painter.setPen(Qt::black);
-		//painter.drawPath(debugMask);
 	}
 	else {
-		double spacing{ w / (n + 1.0) };
-		double y{ h / 2.0 };
+		double spacing{ canvasWidth / (n + 1.0) };
+		double y{ canvasHeight / 2.0 };
 
 		for (int i{}; i < n; ++i)
 		{
@@ -242,7 +230,7 @@ void QDESensorPanel::updateObstacles()
 		generateObstacles(mObstaclesSB->value());
 
 	else if (sb == mObstaclesRadiusSB) {
-		for (Obstacle& obs : mObstacles) 
+		for (CircleObstacle& obs : mObstacles) 
 			obs.setRadius(static_cast<double>(mObstaclesRadiusSB->value()));
 	}
 
@@ -312,8 +300,8 @@ void QDESensorPanel::reset()
 
 void QDESensorPanel::generateObstacles(int n) 
 {
-	int canvasWidth{ mVisualizationLabel->width() };
-	int canvasHeight{ mVisualizationLabel->height() };
+	int canvasWidth{ mCanvas.width() };
+	int canvasHeight{ mCanvas.height() };
 
 	mObstacles.clear();
 	mObstacles.reserve(n);
@@ -335,9 +323,9 @@ void QDESensorPanel::generateObstacles(int n)
 			p = QPointF(x, y);
 			goodPoint = true;
 
-			for (const Obstacle& obs : mObstacles)
+			for (const CircleObstacle& obs : mObstacles)
 			{
-				const QPointF& center{ obs.center };
+				const QPointF& center{ obs.center()};
 				qreal dx{ p.x() - center.x() };
 				qreal dy{ p.y() - center.y() };
 				if (dx * dx + dy * dy < minDist * minDist)

@@ -146,7 +146,7 @@
     <ClCompile Include="SensorPlacementStrategy.cpp">
       <Filter>Source Files\DEStrategies</Filter>
     </ClCompile>
-    <ClCompile Include="SensorCoverageUtils.cpp">
+    <ClCompile Include="CircleObstacle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -228,11 +228,11 @@
     <ClInclude Include="SensorPlacementStrategy.h">
       <Filter>Header Files\DEStrategies</Filter>
     </ClInclude>
-    <ClInclude Include="SensorCoverageUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Obstacle.h">
       <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleObstacle.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,28 +1,19 @@
 #pragma once
 
 #include <QPointF>
-#include <QPainterPath>
+#include <QPainter>
 
-//faire une classe
-//definir interface
-struct Obstacle {
-	QPointF center;
-	double radius;
-	double radius2;
-	QPainterPath shape;
 
-	Obstacle(QPointF c, double r)
-		: center(c), radius(r), radius2(r* r)
-	{
-		shape.addEllipse(c, r, r);
+class Obstacle
+{
+public:
+	Obstacle() = default;
+	Obstacle(Obstacle const&) = default;
+	Obstacle(Obstacle&&) = default;
+	Obstacle& operator=(Obstacle const&) = default;
+	Obstacle& operator=(Obstacle&&) = default;
+	virtual ~Obstacle() = default;
 
-	}
+	virtual void draw(QPainter& painter) const = 0;
 
-	void setRadius(double r) 
-	{
-		radius = r;
-		radius2 = r * r;
-		shape.clear();
-		shape.addEllipse(center, r, r);
-	}
 };

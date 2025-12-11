@@ -1,6 +1,7 @@
 #pragma once
 #include "Sensor.h"
 
+
 class CircleSensor : public Sensor
 {
 public:
@@ -15,6 +16,10 @@ public:
     void setParameter(int index, double value) override;
     QPainterPath coveragePath() const override;
     QPainterPath bodyPath() const override;
+    int degreesOfFreedom() const override;
+    QPainterPath buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles,
+                                       double canvasWidth, double canvasHeight) const override;
+    bool isCollidingObs(const CircleObstacle& obs, const QTransform& t) const override;
     Sensor* clone() const override;
 
 private:

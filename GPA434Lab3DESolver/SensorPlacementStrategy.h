@@ -4,7 +4,7 @@
 #include <QVector>
 
 #include "Sensor.h"
-#include "Obstacle.h"
+#include "CircleObstacle.h"
 #include "QDESolutionPanel.h"
 
 
@@ -13,7 +13,7 @@ class SensorPlacementStrategy : public de::SolutionStrategy
 
 public:
 	SensorPlacementStrategy() = delete;
-	SensorPlacementStrategy(QVector<Sensor*> sensors, QVector<Obstacle> obstacles,
+	SensorPlacementStrategy(QVector<Sensor*> sensors, QVector<CircleObstacle> obstacles,
 							double canvasWidth, double canvasHeight);
 	SensorPlacementStrategy(SensorPlacementStrategy const&) = default;
 	SensorPlacementStrategy(SensorPlacementStrategy&&) = default;
@@ -33,7 +33,7 @@ protected:
 
 private:
 	struct Grid {
-		QVector<QPainterPath> cellShape;
+		QVector<QRectF> cellShape;
 		QVector<bool> covered;
 
 		void reset() {
@@ -45,7 +45,6 @@ private:
 	int dimensions() const;
 	void configParams();
 	bool isInsideCanvas(QVector<QPainterPath> const& bodyPaths) const;
-	bool isColliding(QVector<QPainterPath> const& bodyPaths) const;
 	void buildGrid();
 	qsizetype computeCoverageArea(QVector<QPainterPath> const& coveragePaths);
 
@@ -57,7 +56,7 @@ private:
 
 	Grid mGrid;
 	QVector<Sensor*> mSensors;
-	QVector<Obstacle> mObstacles;
+	QVector<CircleObstacle> mObstacles;
 	double mCanvasWidth;
 	double mCanvasHeight;
 	

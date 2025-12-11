@@ -11,7 +11,7 @@
 #include "QDESolutionPanel.h"
 #include "QImageViewer.h"
 #include "Sensor.h"
-#include "Obstacle.h"
+#include "CircleObstacle.h"
 #include "SensorPlacementStrategy.h"
 
 class QDESensorPanel : public QDESolutionPanel
@@ -44,13 +44,13 @@ private:
 
 private:
 	QImageViewer* mVisualizationLabel;
+	QRect mCanvas;
 	QSpinBox* mSensorCountSpin;
 	QVBoxLayout* mSensorListLayout;
 	QScrollArea* mScrollArea;
 	QScrollBar* mObstaclesSB;
 	QScrollBar* mObstaclesRadiusSB;
-	QVector<Obstacle> mObstacles;
+	QVector<CircleObstacle> mObstacles;
 	QPushButton* mResetButton;
 
-	//mutable SensorPlacementStrategy* mCurrentStrategy = nullptr;
 };

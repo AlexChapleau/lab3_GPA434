@@ -2,7 +2,6 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QFormLayout>
-#include <QVBoxLayout>
 #include <Qpainter>
 
 #include "PeakFunctionMinMaxSolution.h"
@@ -80,31 +79,26 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 	
 	if (de.currentGeneration() > 0) {
 
+		const de::Population& population = de.actualPopulation();
+
 		painter.setBrush(Qt::NoBrush);
 		painter.setPen(historyPen);
 
-		for (int i{1}; i < de.actualPopulation().size(); i++) {
-			const de::Solution sol{ de.actualPopulation()[i] };
-			QTransform t1;
-			t1.translate(sol[0], sol[1]);
-			t1.rotate(sol[2]);
-			t1.scale(sol[3], sol[3]);
-			QPolygonF transformed1{ t1.map(mShape) };
-			painter.drawPolygon(transformed1);
+		for (int i{ static_cast<int>(population.size()) - 1 }; i >= 0; --i) {
+			if (i == 0) {
+				painter.setPen(polyPen);
+				painter.setBrush(polyFillColor);
+			}
+
+			const de::Solution& sol = population[i];
+			QTransform t;
+			t.translate(sol[0], sol[1]);
+			t.rotate(sol[2]);
+			t.scale(sol[3], sol[3]);
+
+			QPolygonF transformed{ t.map(mShape) };
+			painter.drawPolygon(transformed);
 		}
-
-		painter.setPen(polyPen);
-		painter.setBrush(polyFillColor);
-
-		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution()}; 
-		QTransform t;
-		t.translate(bestSolution[0], bestSolution[1]);
-		t.rotate(bestSolution[2]);
-		t.scale(bestSolution[3], bestSolution[3]);
-
-		QPolygonF transformed{ t.map(mShape) };   
-		painter.drawPolygon(transformed);    
-
 	}
 	else {
 		painter.drawPolygon(computePreviewPolygon());

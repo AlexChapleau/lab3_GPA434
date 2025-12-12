@@ -35,7 +35,7 @@ public:
     virtual bool isCollidingObs(const CircleObstacle& obs, const QTransform& t) const = 0;
     virtual Sensor* clone() const = 0;
 
-    static bool isCollidingSensor(const QPainterPath& sensor, const QPainterPath& otherSensor);
+    static bool isCollidingSensor(const QPainterPath& sensorBody, const QPainterPath& otherSensorBody);
     QString name() const;
     void setRange(double range);
     double range() const;

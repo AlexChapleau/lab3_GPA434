@@ -29,6 +29,7 @@ QDESensorPanel::QDESensorPanel(QWidget* parent)
 	establishConnections();
 	buildSensorList();
 	adjustScrollAreaHeight();
+	generateObstacles(mObstaclesSB->value());
 	parameterChanged();
 }
 
@@ -154,7 +155,6 @@ void QDESensorPanel::updateVisualization(QDEAdapter const& de)
 				t.rotate(angle);
 			}
 
-			//qDebug() << "sensorOri =" << angle;
 			painter.translate(0,0);
 
 			QPainterPath cov = s->buildCoverage(QPointF(x,y), angle, mObstacles, canvasWidth, canvasHeight);
@@ -207,19 +207,6 @@ void QDESensorPanel::establishConnections()
 
 	connect(mObstaclesRadiusSB, &QScrollBar::valueChanged,
 		this, &QDESensorPanel::updateObstacles);
-
-	connect(mVisualizationLabel, &QImageViewer::resized, this, [this]() {
-		static bool firstResizeDone{ false };
-
-		if (!firstResizeDone) {
-			firstResizeDone = true;
-
-			generateObstacles(mObstaclesSB->value());
-			
-		}
-
-		parameterChanged();
-		});
 }
 
 void QDESensorPanel::updateObstacles()

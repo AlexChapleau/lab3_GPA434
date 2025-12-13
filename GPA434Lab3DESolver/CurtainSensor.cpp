@@ -9,6 +9,16 @@ CurtainSensor::CurtainSensor(QString name, double range, double width, double or
 {
 }
 
+double CurtainSensor::width() const
+{
+    return mWidth;
+}
+
+double CurtainSensor::orientation() const
+{
+    return mOrientation;
+}
+
 QVector<Sensor::Parameter> CurtainSensor::parameters() const
 {
     return {
@@ -59,7 +69,7 @@ int CurtainSensor::degreesOfFreedom() const
     return 2;
 }
 
-QPainterPath CurtainSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles, double canvasWidth, double canvasHeight) const
+QPainterPath CurtainSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles) const
 {
     QVector<QPointF> pts;
     const double half{ mWidth / 2.0 };
@@ -82,14 +92,15 @@ QPainterPath CurtainSensor::buildCoverage(QPointF pos, double globalOrientation,
     }
 
     const double angle{ qDegreesToRadians(90.0 * mOrientation) };
-    const int rays{ static_cast<int>(half / 2.0) };
+    const int rays{ static_cast<int>(std::ceil(mWidth / 2.0)) };
+    const double step{ mWidth / static_cast<double>(rays) };
 
     for (int i{}; i < rays; i++)
     {
-        double shift{ -half + mWidth * static_cast<double>(i) / rays };
+        double shift{ -half + step * i };
         QPointF start{ pos + QPointF(-u.y(), u.x()) * shift };
 
-        pts.push_back(castRay(start, angle, range, obstacles, canvasWidth, canvasHeight));
+        pts.push_back(castRay(start, angle, range, obstacles));
     }
 
     QPointF baseLeft{ pos + QPointF(-u.y(), u.x()) * -half };
@@ -106,6 +117,11 @@ QPainterPath CurtainSensor::buildCoverage(QPointF pos, double globalOrientation,
     area.closeSubpath();
 
     return area;
+}
+
+Sensor* CurtainSensor::clone() const
+{
+    return new CurtainSensor(*this);
 }
 
 bool CurtainSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t) const
@@ -129,19 +145,4 @@ bool CurtainSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& 
     double dy{ obsY - closestY };
 
     return (dx * dx + dy * dy) < obs.radius2();
-}
-
-Sensor* CurtainSensor::clone() const
-{
-    return new CurtainSensor(*this);
-}
-
-double CurtainSensor::width() const
-{
-    return mWidth;
-}
-
-double CurtainSensor::orientation() const
-{
-    return mOrientation;
 }

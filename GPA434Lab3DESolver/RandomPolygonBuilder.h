@@ -9,7 +9,7 @@ public:
     RandomPolygonBuilder(RandomPolygonBuilder&&) = default;
     RandomPolygonBuilder& operator=(RandomPolygonBuilder const&) = default;
     RandomPolygonBuilder& operator=(RandomPolygonBuilder&&) = default;
-    ~RandomPolygonBuilder() = default;
+    ~RandomPolygonBuilder() override = default;
 
     QPolygonF buildPolygon() override;
 

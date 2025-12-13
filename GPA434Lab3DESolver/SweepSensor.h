@@ -10,19 +10,21 @@ public:
     SweepSensor(SweepSensor&&) = default;
     SweepSensor& operator=(SweepSensor const&) = default;
     SweepSensor& operator=(SweepSensor&&) = default;
-    ~SweepSensor() = default;
+    ~SweepSensor() override = default;
 
+    double angle() const;
     QVector<Parameter> parameters() const override;
     void setParameter(int index, double value) override;
+
     QPainterPath coveragePath() const override;
     QPainterPath bodyPath() const override;
     virtual int degreesOfFreedom() const override;
-    virtual QPainterPath buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles,
-                                       double canvasWidth, double canvasHeight) const override;
-    virtual bool isCollidingObs(const CircleObstacle& obs, const QTransform& t) const override;
+
+    virtual QPainterPath buildCoverage(QPointF pos, double globalOrientation,
+                                       const QVector<CircleObstacle>& obstacles) const override;
     Sensor* clone() const override;
 
-    double angle() const;
+    virtual bool isCollidingObs(const CircleObstacle& obs, const QTransform& t) const override;
 
 private:
     static const double smBodyLength;

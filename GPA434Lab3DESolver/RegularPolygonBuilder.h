@@ -9,7 +9,7 @@ public:
     RegularPolygonBuilder(RegularPolygonBuilder&&) = default;
     RegularPolygonBuilder& operator=(RegularPolygonBuilder const&) = default;
     RegularPolygonBuilder& operator=(RegularPolygonBuilder&&) = default;
-    ~RegularPolygonBuilder() = default;
+    ~RegularPolygonBuilder() override = default;
 
     QPolygonF buildPolygon() override;
 

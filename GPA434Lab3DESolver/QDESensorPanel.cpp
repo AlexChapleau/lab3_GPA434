@@ -2,9 +2,7 @@
 #include <QLabel>
 #include <QGroupBox>
 #include <QFormLayout>
-#include <QVBoxLayout>
-#include <Qpainter>
-#include <QPolygonF>
+#include <QPainter>
 
 #include "CircleSensor.h"
 #include "SweepSensor.h"
@@ -13,17 +11,36 @@
 #include "Random.h"
 #include "SensorConfigWidget.h"
 
+const QVector<QColor> QDESensorPanel::smRankColors{ {QColor(255, 255, 0),
+													 QColor(0, 200, 0),
+													 QColor(255, 165, 0),
+													 QColor(0, 180, 255),
+													 QColor(255, 255, 255)
+}};
 
+const QVector<QDESensorPanel::PrecisionPreset> QDESensorPanel::smPrecisionPresets = {
+	{
+		"Rapide", 25.0, "Calcul très rapide\nPrécision grossière"
+	},
+	{
+		"Équilibré", 15.0, "Bon compromis vitesse / précision\nrecommandée"
+	},
+	{
+		"Précis", 10.0, "Calcul plus lent\nHaute précision"
+	}
+};
 
 QDESensorPanel::QDESensorPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer }
-	, mCanvas(0, 0, 1500, 500)
 	, mSensorCountSpin{ new QSpinBox }
 	, mSensorListLayout{ new QVBoxLayout }
 	, mScrollArea{ new QScrollArea }
     , mObstaclesSB{}
     , mObstaclesRadiusSB{}
 	, mResetButton{ new QPushButton("Réinitialiser") }
+	, mSolutionCountSpin{ new QSpinBox }
+	, mPrecisionBox{ new QComboBox }
+	, mCanvas(0, 0, 1500, 500)
 {
 	assemblingAndLayouting();
 	establishConnections();
@@ -35,57 +52,191 @@ QDESensorPanel::QDESensorPanel(QWidget* parent)
 
 de::SolutionStrategy* QDESensorPanel::buildSolution() const
 {
-	QVector<Sensor*> sensors{ collectSensors() };
+	QVector<Sensor*> sensors;
+	
+	for (Sensor* sensor : collectSensors())
+		sensors.emplace_back(sensor->clone()); //donner le ownership des sensors à la stratégie
+
+	int canvasWidth{ mCanvas.width() };
+	int canvasHeight{ mCanvas.height() };
+	double cellSize{ mPrecisionBox->currentData().toDouble() };
+
+	return new SensorPlacementStrategy(sensors, mObstacles, canvasWidth, canvasHeight, cellSize);
+}
+
+void QDESensorPanel::updateVisualization(QDEAdapter const& de)
+{
 	int canvasWidth{ mCanvas.width() };
 	int canvasHeight{ mCanvas.height() };
 
-	return new SensorPlacementStrategy(sensors, mObstacles, canvasWidth, canvasHeight);;
+	QImage img(canvasWidth, canvasHeight, QImage::Format_RGB32);
+	QPainter painter(&img);
+	painter.setRenderHint(QPainter::Antialiasing);
+
+	painter.fillRect(img.rect(), QColor(32, 32, 48));
+
+	painter.setBrush(Qt::lightGray);
+	painter.setPen(Qt::NoPen);
+
+	for (const CircleObstacle& obs : mObstacles)
+		obs.draw(painter);
+
+	QVector<Sensor*> sensors{ collectSensors() };
+
+	if (de.currentGeneration() > 0)
+	{
+		const de::Population& population{ de.actualPopulation() };
+		const int maxSolutions{ mSolutionCountSpin->value() };
+		int count = std::min(maxSolutions, static_cast<int>(population.size()));
+
+		for (int p{ count - 1 }; p >= 0; --p)
+		{
+			const de::Solution& sol{ population[p] };
+			QColor color{ smRankColors[qMin(p, smRankColors.size() - 1)] };
+			qreal alpha = std::max(0.12, std::pow(0.6, p));
+			color.setAlphaF(alpha);
+			qreal width = (p == 0) ? 1.5 : std::max(0.4, 1.2 - 0.15 * p);
+
+			size_t i{};
+
+			for (Sensor* sensor : sensors)
+			{
+				if (!sensor) continue;
+
+				double x{ sol[i++] };
+				double y{ sol[i++] };
+
+				QTransform t;
+				t.translate(x, y);
+
+				double angle{};
+				if (dynamic_cast<SweepSensor*>(sensor))
+				{
+					angle = sol[i++];
+					t.rotate(angle);
+				}
+
+				QPainterPath coverage{ sensor->buildCoverage(QPointF(x, y), angle, mObstacles) };
+
+				if (p == 0)
+				{
+					painter.setBrush(QColor(255, 255, 0, 100));
+					painter.setPen(QPen(Qt::yellow, width));
+					painter.drawPath(coverage);
+
+					painter.setBrush(Qt::red);
+					painter.setPen(Qt::red);
+					painter.drawPath(t.map(sensor->bodyPath()));
+				}
+				else
+				{
+					painter.setBrush(Qt::NoBrush);
+					painter.setPen(QPen(color, width));
+					painter.drawPath(coverage);
+
+					painter.setBrush(color);
+					painter.drawPath(t.map(sensor->bodyPath()));
+				}
+			}
+		}
+	}
+	else
+	{
+		double spacing{ canvasWidth / (sensors.size() + 1.0) };
+		double y{ canvasHeight / 2.0 };
+
+		for (int i{}; i < sensors.size(); ++i)
+		{
+			painter.save();
+			painter.translate(QPointF(spacing * (i + 1), y));
+
+			painter.setBrush(QColor(255, 255, 0, 100));
+			painter.setPen(Qt::yellow);
+			painter.drawPath(sensors[i]->coveragePath());
+
+			painter.setBrush(Qt::red);
+			painter.setPen(Qt::red);
+			painter.drawPath(sensors[i]->bodyPath());
+
+			painter.restore();
+		}
+	}
+
+	mVisualizationLabel->setImage(img);
+}
+
+void QDESensorPanel::updateObstacles()
+{
+	QScrollBar* sb{ qobject_cast<QScrollBar*>(sender()) };
+
+	if (sb == mObstaclesSB)
+		generateObstacles(mObstaclesSB->value());
+
+	else if (sb == mObstaclesRadiusSB) {
+		double baseR{ static_cast<double>(mObstaclesRadiusSB->value()) };
+		for (CircleObstacle& obs : mObstacles)
+			obs.setBaseRadius(baseR);
+	}
+
+	parameterChanged();
+}
+
+void QDESensorPanel::onSensorCountChanged()
+{
+	buildSensorList();
+	parameterChanged();
+}
+
+
+void QDESensorPanel::reset()
+{
+	mObstaclesSB->setValue(mObstaclesSB->minimum());
+	mObstaclesRadiusSB->setValue(mObstaclesRadiusSB->minimum());
+
+	buildSensorList();
+	updateObstacles();
+}
+
+void QDESensorPanel::setupGUI()
+{
+	mSensorCountSpin->setRange(1, 3);
+	mSensorCountSpin->setValue(mSensorCountSpin->minimum());
+
+	mSolutionCountSpin->setRange(1, smRankColors.size());
+	mSolutionCountSpin->setValue(mSolutionCountSpin->minimum());
+
+	for (int i = 0; i < smPrecisionPresets.size(); ++i)
+	{
+		const PrecisionPreset& p = smPrecisionPresets[i];
+		mPrecisionBox->addItem(p.label, p.cellSize);
+		mPrecisionBox->setItemData(i, p.tooltip, Qt::ToolTipRole);
+	}
+
+	mPrecisionBox->setCurrentIndex(1);
 }
 
 void QDESensorPanel::assemblingAndLayouting()
 {
-    mSensorCountSpin->setRange(1, 3);
-    mSensorCountSpin->setValue(mSensorCountSpin->minimum());
+	setupGUI();
 
 	QWidget* sensorWidget{ new QWidget };
 	sensorWidget->setLayout(mSensorListLayout);
-    mScrollArea->setWidget(sensorWidget);
-    mScrollArea->setWidgetResizable(true);
+	mScrollArea->setWidget(sensorWidget);
+	mScrollArea->setWidgetResizable(true);
 
-	QVBoxLayout* titlesLayout{ new QVBoxLayout };
-	titlesLayout->addWidget(new QLabel("Nombre de capteurs :"));
-	titlesLayout->addWidget(new QLabel("Nombre d'obstacles :"));
-	titlesLayout->addWidget(new QLabel("Rayon des obstacles :"));
+	QGroupBox* configBox{ new QGroupBox("Configuration des capteurs") };
+	QHBoxLayout* configLayout{ new QHBoxLayout(configBox) };
 
-	QVBoxLayout* valuesLayout{ new QVBoxLayout };
-	valuesLayout->addWidget(mSensorCountSpin);
-
-	QHBoxLayout* obsNumValuesLayout{ new QHBoxLayout };
-	obsNumValuesLayout->addLayout(buildScrollBarLayout(mObstaclesSB, 5, 20));
-	valuesLayout->addLayout(obsNumValuesLayout);
- 
-	QHBoxLayout* obsRadiusLayout{ new QHBoxLayout };
-	obsRadiusLayout->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 30, 70));
-	valuesLayout->addLayout(obsRadiusLayout);
-    
-	QHBoxLayout* localParamsLayout{ new QHBoxLayout };
-	localParamsLayout->addLayout(titlesLayout);
-	localParamsLayout->addSpacing(20);
-	localParamsLayout->addLayout(valuesLayout);
-
-	QGroupBox* sensorsConfigBox{ new QGroupBox("Configuration des capteurs") };
-	QHBoxLayout* sensorsConfigLayout{ new QHBoxLayout(sensorsConfigBox) };
-
-	sensorsConfigLayout->addLayout(localParamsLayout,3);
-	sensorsConfigLayout->addWidget(mScrollArea,6);
-	sensorsConfigLayout->addWidget(mResetButton,1);
+	configLayout->addLayout(buildLeftParamsLayout(), 3);
+	configLayout->addWidget(mScrollArea, 6);
+	configLayout->addLayout(buildRightControlLayout(), 1);
 
 	QVBoxLayout* mainLayout{ new QVBoxLayout };
-	mainLayout->addWidget(sensorsConfigBox);
+	mainLayout->addWidget(configBox);
 	mainLayout->addWidget(mVisualizationLabel, 1);
-	mainLayout->setContentsMargins(QMargins(0, 0, 0, 0));
+	mainLayout->setContentsMargins(0, 0, 0, 0);
 
-    setLayout(mainLayout);
+	setLayout(mainLayout);
 
 }
 
@@ -102,102 +253,73 @@ QHBoxLayout* QDESensorPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
 	layout->addWidget(sb);
 	layout->addWidget(label);
 
-	connect(sb, &QScrollBar::valueChanged,
-		label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+	connect(sb, &QScrollBar::valueChanged, label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
 
 	return layout;
 }
 
-void QDESensorPanel::updateVisualization(QDEAdapter const& de)
+QWidget* QDESensorPanel::buildLegendWidget()
 {
-	int canvasWidth{ mCanvas.width() };
-	int canvasHeight{ mCanvas.height() };
+	QLabel* icon{ new QLabel };
+	icon->setPixmap(style()->standardIcon(QStyle::SP_MessageBoxInformation).pixmap(16, 16));
 
-	QImage img(canvasWidth, canvasHeight, QImage::Format_RGB32);
-	QPainter painter(&img);
-	painter.setRenderHint(QPainter::Antialiasing);
+	QString tooltip("<b>Légende</b><br>");
+	for (int i{}; i < smRankColors.size(); ++i)
+		tooltip += QString("<font color='%1'>■</font> Solution %2<br>")
+		.arg(smRankColors[i].name()).arg(i + 1);
 
-	painter.fillRect(img.rect(), QColor(32, 32, 48));
+	icon->setToolTip(tooltip);
+	return icon;
+}
 
-	painter.setBrush(Qt::lightGray);
-	painter.setOpacity(0.8);
-	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->value()) };
+QHBoxLayout* QDESensorPanel::buildLeftParamsLayout()
+{
+	QVBoxLayout* titles{ new QVBoxLayout };
+	titles->addWidget(new QLabel("Nombre de capteurs :"));
+	titles->addWidget(new QLabel("Nombre d'obstacles :"));
+	titles->addWidget(new QLabel("Rayon des obstacles :"));
 
-	for (const CircleObstacle& obs : mObstacles)
-	{
-		obs.draw(painter);
-	}
+	QVBoxLayout* values{ new QVBoxLayout };
+	values->addWidget(mSensorCountSpin);
+	values->addLayout(buildScrollBarLayout(mObstaclesSB, 10, 30));
+	values->addLayout(buildScrollBarLayout(mObstaclesRadiusSB, 30, 40));
 
-	QVector<Sensor*> sensors{ collectSensors() };
-	qsizetype n{ sensors.size() };
+	QHBoxLayout* layout{ new QHBoxLayout };
+	layout->addLayout(titles);
+	layout->addLayout(values);
 
-	QVector<QPainterPath> coveragePaths;
-	if (de.currentGeneration() > 0) {
-		const de::Solution bestSolution{ de.actualPopulation().statistics().bestSolution() };
-		size_t i{};
+	return layout;
+}
 
-		for (Sensor* s : sensors)
-		{
-			if (!s) //retirer un warning VisualStudio pour un nullptr possible
-				continue;
-			double x{ bestSolution[i++] };
-			double y{ bestSolution[i++] };
-			double sensorRange{ s->parameters()[0].value };
-			
+QVBoxLayout* QDESensorPanel::buildRightControlLayout()
+{
+	QHBoxLayout* precisionLayout{ new QHBoxLayout };
+	precisionLayout->addWidget(new QLabel("Précision :"));
+	precisionLayout->addWidget(mPrecisionBox);
 
-			QTransform t;
-			t.translate(x, y);
+	QHBoxLayout* solutionLayout{ new QHBoxLayout };
+	solutionLayout->addWidget(buildLegendWidget());
+	solutionLayout->addWidget(new QLabel("Nb Solutions :"));
+	solutionLayout->addWidget(mSolutionCountSpin);
 
-			double angle{};
-			if (dynamic_cast<SweepSensor*>(s))
-			{
-				angle = bestSolution[i++];
-				t.rotate(angle);
-			}
+	QVBoxLayout* layout{ new QVBoxLayout };
+	layout->addLayout(precisionLayout);
+	layout->addLayout(solutionLayout);
+	layout->addWidget(mResetButton);
 
-			painter.translate(0,0);
-
-			QPainterPath cov = s->buildCoverage(QPointF(x,y), angle, mObstacles, canvasWidth, canvasHeight);
-			painter.setBrush(QColor(255, 255, 0, 80));
-			painter.setPen(Qt::yellow);
-			painter.drawPath(cov);
-			coveragePaths.push_back(cov);
-
-			painter.setBrush(Qt::red);
-			painter.setPen(Qt::red);
-			painter.drawPath(t.map(s->bodyPath()));
-
-		}
-	}
-	else {
-		double spacing{ canvasWidth / (n + 1.0) };
-		double y{ canvasHeight / 2.0 };
-
-		for (int i{}; i < n; ++i)
-		{
-			double x{ spacing * (i + 1) };
-			QPointF pos(x, y);
-
-			painter.save();
-			painter.translate(pos);
-
-			painter.setBrush(QColor(255, 255, 0, 80));
-			painter.setPen(Qt::yellow);
-			painter.drawPath(sensors[i]->coveragePath());
-
-			painter.setBrush(Qt::red);
-			painter.setPen(Qt::red);
-			painter.drawPath(sensors[i]->bodyPath());
-			painter.restore();
-		}
-	}
-	mVisualizationLabel->setImage(img);
+	return layout;
 }
 
 void QDESensorPanel::establishConnections()
 {
 	connect(mSensorCountSpin, QOverload<int>::of(&QSpinBox::valueChanged),
 		this, &QDESensorPanel::onSensorCountChanged);
+
+	connect(mSolutionCountSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &QDESensorPanel::parameterChanged);
+
+	connect(mPrecisionBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+		this, &QDESensorPanel::parameterChanged);
 
 	connect(mResetButton, &QPushButton::clicked,
 		this, &QDESensorPanel::reset);
@@ -209,19 +331,13 @@ void QDESensorPanel::establishConnections()
 		this, &QDESensorPanel::updateObstacles);
 }
 
-void QDESensorPanel::updateObstacles()
+void QDESensorPanel::adjustScrollAreaHeight()
 {
-	QScrollBar* sb = qobject_cast<QScrollBar*>(sender());
+	QWidget* sensorWidget{ mSensorListLayout->itemAt(0)->widget() };
+	int rowHeight{ sensorWidget->sizeHint().height() };
+	int totalHeight{ rowHeight + 10 };
 
-	if (sb == mObstaclesSB)
-		generateObstacles(mObstaclesSB->value());
-
-	else if (sb == mObstaclesRadiusSB) {
-		for (CircleObstacle& obs : mObstacles) 
-			obs.setRadius(static_cast<double>(mObstaclesRadiusSB->value()));
-	}
-
-	parameterChanged();
+	mScrollArea->setFixedHeight(totalHeight);
 }
 
 void QDESensorPanel::clearSensorList()
@@ -270,21 +386,6 @@ QVector<Sensor*> QDESensorPanel::collectSensors() const
 	return list;
 }
 
-void QDESensorPanel::onSensorCountChanged()
-{
-	buildSensorList();
-	parameterChanged();
-}
-
-void QDESensorPanel::reset() 
-{
-	mObstaclesSB->setValue(mObstaclesSB->minimum());
-	mObstaclesRadiusSB->setValue(mObstaclesRadiusSB->minimum());
-
-	buildSensorList();
-	updateObstacles();
-}
-
 void QDESensorPanel::generateObstacles(int n) 
 {
 	int canvasWidth{ mCanvas.width() };
@@ -293,8 +394,8 @@ void QDESensorPanel::generateObstacles(int n)
 	mObstacles.clear();
 	mObstacles.reserve(n);
 
-	qreal r{ static_cast<qreal>(mObstaclesRadiusSB->maximum()) };
-	qreal minDist{ 2.0 * r };
+	qreal baseR{ static_cast<qreal>(mObstaclesRadiusSB->value()) };
+	qreal minDist{ 2.0 * baseR * CircleObstacle::maxScale()};
 
 	int maxTries{ 1000 };
 
@@ -305,8 +406,8 @@ void QDESensorPanel::generateObstacles(int n)
 
 		for (int attempt{}; attempt < maxTries; ++attempt)
 		{
-			qreal x{ Random::real(r, canvasWidth - r) };
-			qreal y{ Random::real(r, canvasHeight - r) };
+			qreal x{ Random::real(baseR, canvasWidth - baseR) };
+			qreal y{ Random::real(baseR, canvasHeight - baseR) };
 			p = QPointF(x, y);
 			goodPoint = true;
 
@@ -327,14 +428,4 @@ void QDESensorPanel::generateObstacles(int n)
 		
 		mObstacles.emplace_back(p,static_cast<double>(mObstaclesRadiusSB->value()));
 	}
-}
-
-
-void QDESensorPanel::adjustScrollAreaHeight()
-{ 
-	QWidget* sensorWidget{ mSensorListLayout->itemAt(0)->widget() };
-	int rowHeight{ sensorWidget->sizeHint().height() };
-	int totalHeight{ rowHeight + 10 };
-
-	mScrollArea->setFixedHeight(totalHeight);
 }

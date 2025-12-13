@@ -140,14 +140,14 @@
     <ClCompile Include="QDESensorPanel.cpp">
       <Filter>Source Files\ProblemToSolveSubPanels</Filter>
     </ClCompile>
-    <ClCompile Include="SensorConfigWidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SensorPlacementStrategy.cpp">
       <Filter>Source Files\DEStrategies</Filter>
     </ClCompile>
+    <ClCompile Include="SensorConfigWidget.cpp">
+      <Filter>Source Files\SensorUtilities</Filter>
+    </ClCompile>
     <ClCompile Include="CircleObstacle.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,7 +185,7 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="SensorConfigWidget.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\SensorUtilities</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -232,7 +232,7 @@
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="CircleObstacle.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

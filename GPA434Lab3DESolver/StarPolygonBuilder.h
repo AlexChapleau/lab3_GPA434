@@ -12,7 +12,7 @@ public:
     StarPolygonBuilder(StarPolygonBuilder&&) = default;
     StarPolygonBuilder& operator=(StarPolygonBuilder const&) = default;
     StarPolygonBuilder& operator=(StarPolygonBuilder&&) = default;
-    ~StarPolygonBuilder() = default;
+    ~StarPolygonBuilder() override = default;
 
     QPolygonF buildPolygon() override;
 

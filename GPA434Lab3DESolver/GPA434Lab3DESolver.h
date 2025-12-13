@@ -21,7 +21,11 @@ class GPA434Lab3DESolver : public QMainWindow
 
 public:
     GPA434Lab3DESolver(QWidget *parent = nullptr);
-    ~GPA434Lab3DESolver() override;
+    GPA434Lab3DESolver(GPA434Lab3DESolver const&) = default;
+    GPA434Lab3DESolver(GPA434Lab3DESolver&&) = default;
+    GPA434Lab3DESolver& operator=(GPA434Lab3DESolver const&) = default;
+    GPA434Lab3DESolver& operator=(GPA434Lab3DESolver&&) = default;
+    ~GPA434Lab3DESolver() override = default;
 
 private:
     void setupGUI();

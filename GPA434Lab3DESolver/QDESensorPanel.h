@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QScrollBar>
 #include <QHBoxLayout>
@@ -33,24 +33,47 @@ public slots:
 	void reset();
 
 private:
-	void assemblingAndLayouting();
-	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange);
-	void clearSensorList();
-	void buildSensorList();
-	void establishConnections();
-	QVector<Sensor*> collectSensors() const;
-	void generateObstacles(int n);
-	void adjustScrollAreaHeight();
+	struct PrecisionPreset
+	{
+		QString label;
+		double cellSize;
+		QString tooltip;
+	};
 
 private:
+	// === Construction UI ===
+	void setupGUI();
+	void assemblingAndLayouting();
+	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange);
+	QWidget* buildLegendWidget();
+	QHBoxLayout* buildLeftParamsLayout();
+	QVBoxLayout* buildRightControlLayout();
+	void establishConnections();
+	void adjustScrollAreaHeight();
+
+	// === Comportement UI ======
+	void clearSensorList();
+	void buildSensorList();
+
+	// === Logique et données ======
+	QVector<Sensor*> collectSensors() const;
+	void generateObstacles(int n);
+
+private:
+	static const QVector<QColor> smRankColors;
+	static const QVector<PrecisionPreset> smPrecisionPresets;
+
 	QImageViewer* mVisualizationLabel;
-	QRect mCanvas;
 	QSpinBox* mSensorCountSpin;
 	QVBoxLayout* mSensorListLayout;
 	QScrollArea* mScrollArea;
 	QScrollBar* mObstaclesSB;
 	QScrollBar* mObstaclesRadiusSB;
-	QVector<CircleObstacle> mObstacles;
 	QPushButton* mResetButton;
+	QSpinBox* mSolutionCountSpin;
+	QComboBox* mPrecisionBox;
+
+	QRect mCanvas;
+	QVector<CircleObstacle> mObstacles;
 
 };

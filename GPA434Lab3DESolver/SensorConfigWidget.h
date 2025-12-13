@@ -9,9 +9,7 @@
 #include <QLabel>
 
 #include "Sensor.h"
-#include "CircleSensor.h"
-#include "SweepSensor.h"
-#include "CurtainSensor.h"
+
 
 
 class SensorConfigWidget : public QWidget
@@ -45,6 +43,5 @@ private:
     Sensor* mSensor;
     QComboBox* mTypeSelectionBox;
     QFormLayout* mForm;
-    QVector<QScrollBar*> mParamEditors;
     QVector<Sensor*> mTypes;
 };

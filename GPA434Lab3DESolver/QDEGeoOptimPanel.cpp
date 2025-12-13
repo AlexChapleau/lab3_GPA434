@@ -13,13 +13,13 @@
 
 QDEGeoOptimPanel::QDEGeoOptimPanel(QWidget* parent)
 	: mVisualizationLabel{ new QImageViewer}
-	, mCanvas(0, 0, 1500, 500)
 	, mObstaclesScrollBar{}
 	, mPeaksScrollBar{}
 	, mPolygonSelectionBox{ new QComboBox }
 	, mResetObstaclesButton{ new QPushButton("Regénérer") }
-	, mObstacles{}
+	, mCanvas(0, 0, 1500, 500)
 	, mShape{ }
+	, mObstacles{}
 	, mBuilders{
 		  new RegularPolygonBuilder,
 		  new StarPolygonBuilder,
@@ -62,10 +62,10 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 
 	painter.drawPoints(mObstacles.data(), mObstacles.size());
 	
-	QPen historyPen(QColor(255,255,255,30));
-	historyPen.setWidth(1);
+	QPen solPen(QColor(255,255,255,30));
+	solPen.setWidth(1);
 	painter.setBrush(Qt::NoBrush);
-	painter.setPen(historyPen);
+	painter.setPen(solPen);
 
 	QPen polyPen(Qt::yellow);
 	polyPen.setWidth(1);
@@ -82,7 +82,7 @@ void QDEGeoOptimPanel::updateVisualization(QDEAdapter const& de)
 		const de::Population& population = de.actualPopulation();
 
 		painter.setBrush(Qt::NoBrush);
-		painter.setPen(historyPen);
+		painter.setPen(solPen);
 
 		for (int i{ static_cast<int>(population.size()) - 1 }; i >= 0; --i) {
 			if (i == 0) {
@@ -124,35 +124,6 @@ void QDEGeoOptimPanel::updateShape()
 	parameterChanged();
 }
 
-QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
-													int maxRange, int minWidth)
-{
-	sb = new QScrollBar(Qt::Horizontal);
-	sb->setRange(minRange, maxRange);
-	sb->setMinimumWidth(minWidth);
-	sb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-
-	QLabel* label{ new QLabel(QString::number(sb->value())) };
-	label->setFixedWidth(20);
-
-	QHBoxLayout* layout{ new QHBoxLayout };
-	layout->addWidget(sb);
-	layout->addWidget(label);
-
-	connect(sb, &QScrollBar::valueChanged,
-			label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
-
-	return layout;
-}
-
-void QDEGeoOptimPanel::setupGUI()
-{
-	for (PolygonBuilder* builder : mBuilders)
-		mPolygonSelectionBox->addItem(builder->name());
-
-	mShape = mBuilders[0]->buildPolygon();
-	updateObstacles();
-}
 
 void QDEGeoOptimPanel::assemblingAndLayouting()
 {
@@ -178,6 +149,36 @@ void QDEGeoOptimPanel::assemblingAndLayouting()
 	layout->setContentsMargins(0, 0, 0, 0);
 
 	setLayout(layout);
+}
+
+void QDEGeoOptimPanel::setupGUI()
+{
+	for (PolygonBuilder* builder : mBuilders)
+		mPolygonSelectionBox->addItem(builder->name());
+
+	mShape = mBuilders[0]->buildPolygon();
+	updateObstacles();
+}
+
+QHBoxLayout* QDEGeoOptimPanel::buildScrollBarLayout(QScrollBar*& sb, int minRange,
+													int maxRange, int minWidth)
+{
+	sb = new QScrollBar(Qt::Horizontal);
+	sb->setRange(minRange, maxRange);
+	sb->setMinimumWidth(minWidth);
+	sb->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+
+	QLabel* label{ new QLabel(QString::number(sb->value())) };
+	label->setFixedWidth(20);
+
+	QHBoxLayout* layout{ new QHBoxLayout };
+	layout->addWidget(sb);
+	layout->addWidget(label);
+
+	connect(sb, &QScrollBar::valueChanged,
+			label, static_cast<void(QLabel::*)(int)>(&QLabel::setNum));
+
+	return layout;
 }
 
 void QDEGeoOptimPanel::establishConnections()
@@ -230,4 +231,3 @@ QPolygonF QDEGeoOptimPanel::computePreviewPolygon() const
 
 	return t.map(poly);
 }
-

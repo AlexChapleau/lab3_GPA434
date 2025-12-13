@@ -1,4 +1,5 @@
 #include "GPA434Lab3DESolver.h"
+
 #include "QDEGeoOptimPanel.h"
 #include "QDESensorPanel.h"
 
@@ -18,20 +19,11 @@ GPA434Lab3DESolver::GPA434Lab3DESolver(QWidget *parent)
     showMaximized();
 }
 
-GPA434Lab3DESolver::~GPA434Lab3DESolver()
-{
-}
-
 void GPA434Lab3DESolver::setupGUI()
 {
-    QWidget* centralWidget = new QWidget;
-    setCentralWidget(centralWidget);
 
-    QHBoxLayout* mainLayout = new QHBoxLayout;
-    centralWidget->setLayout(mainLayout);
-
-    QWidget* leftWidget = new QWidget;
-    QVBoxLayout* leftLayout = new QVBoxLayout;
+    QWidget* leftWidget{ new QWidget };
+    QVBoxLayout* leftLayout{ new QVBoxLayout };
     leftWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
     leftWidget->setLayout(leftLayout);
 
@@ -44,7 +36,7 @@ void GPA434Lab3DESolver::setupGUI()
     mQDEBestResultPanel = new QDEBestResultPanel(mDEAdapter);
     leftLayout->addWidget(mQDEBestResultPanel);
 
-    QSplitter* rightSplitter = new QSplitter;
+    QSplitter* rightSplitter{ new QSplitter };
     rightSplitter->setOrientation(Qt::Vertical);
 
     mQDESolutionTabPanel = new QDESolutionTabPanel(mDEAdapter);
@@ -60,8 +52,14 @@ void GPA434Lab3DESolver::setupGUI()
     rightSplitter->setStretchFactor(0, 7); 
     rightSplitter->setStretchFactor(1, 3);
 
+    QWidget* centralWidget{ new QWidget };
+    setCentralWidget(centralWidget);
+
+    QHBoxLayout* mainLayout{ new QHBoxLayout };
     mainLayout->addWidget(leftWidget);
     mainLayout->addWidget(rightSplitter);
+
+    centralWidget->setLayout(mainLayout);
 
 }
 

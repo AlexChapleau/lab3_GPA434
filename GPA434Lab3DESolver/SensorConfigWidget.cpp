@@ -1,5 +1,8 @@
 ﻿#include "SensorConfigWidget.h"
 
+#include "CircleSensor.h"
+#include "SweepSensor.h"
+#include "CurtainSensor.h"
 
 SensorConfigWidget::SensorConfigWidget(QWidget* parent)
     : QWidget(parent)
@@ -20,8 +23,8 @@ SensorConfigWidget::SensorConfigWidget(QWidget* parent)
 SensorConfigWidget::~SensorConfigWidget()
 {
     delete mSensor;
-    for (Sensor* s : mTypes)
-        delete s;
+    for (Sensor* sensor : mTypes)
+        delete sensor;
 }
 
 Sensor* SensorConfigWidget::sensor() const

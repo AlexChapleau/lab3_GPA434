@@ -40,17 +40,17 @@ int CircleSensor::degreesOfFreedom() const
     return 2;
 }
 
-QPainterPath CircleSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles, double canvasWidth, double canvasHeight) const
+QPainterPath CircleSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles) const
 {
     QPainterPath area;
     const double range{ mRange };
 
     QVector<QPointF> pts;
-    pts.reserve(90);
+    pts.reserve(120);
 
-    for (int i{}; i < 90; i++)
+    for (int i{}; i < 120; i++)
     {
-        QPointF h{ castRay(pos, qDegreesToRadians(4 * i), range, obstacles, canvasWidth, canvasHeight) };
+        QPointF h{ castRay(pos, qDegreesToRadians(3 * i), range, obstacles) };
         pts.push_back(h);
     }
 
@@ -66,6 +66,11 @@ QPainterPath CircleSensor::buildCoverage(QPointF pos, double globalOrientation, 
     return area;
 }
 
+Sensor* CircleSensor::clone() const
+{
+    return new CircleSensor(*this);
+}
+
 bool CircleSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t) const
 {
     QPointF c{ t.map(QPointF(0, 0)) };
@@ -78,7 +83,3 @@ bool CircleSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t
     return (dx * dx + dy * dy) < dist*dist;
 }
 
-Sensor* CircleSensor::clone() const
-{
-    return new CircleSensor(*this);
-}

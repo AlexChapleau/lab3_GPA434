@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QScrollBar>
 #include <QHBoxLayout>
@@ -30,21 +30,25 @@ public slots:
 	void updateShape();
 
 private:
-	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange, int minWidth);
-	void setupGUI();
+	// === Construction UI ===
 	void assemblingAndLayouting();
+	void setupGUI();
+	QHBoxLayout* buildScrollBarLayout(QScrollBar*& sb, int minRange, int maxRange, int minWidth);
 	void establishConnections();
+
+	// === Logique et données ======
 	QVector<QPointF> generateObstacles(int n) const;
 	QPolygonF computePreviewPolygon() const;
 
 private:
 	QImageViewer* mVisualizationLabel;
-	QRect mCanvas;
 	QScrollBar* mObstaclesScrollBar;
 	QScrollBar* mPeaksScrollBar;
 	QComboBox* mPolygonSelectionBox;
 	QPushButton* mResetObstaclesButton;
-	QVector<QPointF> mObstacles;
+
+	QRect mCanvas;
 	QPolygonF mShape;
+	QVector<QPointF> mObstacles;
 	QVector<PolygonBuilder*> mBuilders;
 };

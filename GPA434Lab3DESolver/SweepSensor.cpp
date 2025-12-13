@@ -11,6 +11,11 @@ SweepSensor::SweepSensor(QString name, double range, double angle)
 {
 }
 
+double SweepSensor::angle() const
+{
+	return mAngle;
+}
+
 QVector<Sensor::Parameter> SweepSensor::parameters() const
 {
 	return {
@@ -59,7 +64,7 @@ int SweepSensor::degreesOfFreedom() const
 	return 3;
 }
 
-QPainterPath SweepSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles, double canvasWidth, double canvasHeight) const
+QPainterPath SweepSensor::buildCoverage(QPointF pos, double globalOrientation, const QVector<CircleObstacle>& obstacles) const
 {
 	QPainterPath area;
 	double half{ mAngle / 2.0 };
@@ -74,7 +79,7 @@ QPainterPath SweepSensor::buildCoverage(QPointF pos, double globalOrientation, c
 		double step{ static_cast<double>(i) / (rays - 1) };
 		double angDeg{ globalOrientation - half + 2 * half * step };
 
-		QPointF hit{ Sensor::castRay(pos, qDegreesToRadians(angDeg), range, obstacles, canvasWidth, canvasHeight) };
+		QPointF hit{ Sensor::castRay(pos, qDegreesToRadians(angDeg), range, obstacles) };
 		pts.push_back(hit);
 	}
 
@@ -90,6 +95,11 @@ QPainterPath SweepSensor::buildCoverage(QPointF pos, double globalOrientation, c
 	return area;
 }
 
+Sensor* SweepSensor::clone() const
+{
+	return new SweepSensor(*this);
+}
+
 bool SweepSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t) const
 {
 	QPointF c{ t.map(QPointF(0, 0)) };
@@ -101,14 +111,4 @@ bool SweepSensor::isCollidingObs(const CircleObstacle& obs, const QTransform& t)
 	double dist{ obs.radius() + smBodyLength };
 
 	return (dx * dx + dy * dy) < dist * dist;
-}
-
-Sensor* SweepSensor::clone() const
-{
-	return new SweepSensor(*this);
-}
-
-double SweepSensor::angle() const
-{
-	return mAngle;
 }

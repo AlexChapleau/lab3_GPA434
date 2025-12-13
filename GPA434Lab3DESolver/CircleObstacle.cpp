@@ -1,32 +1,49 @@
 #include "CircleObstacle.h"
 
-CircleObstacle::CircleObstacle(const QPointF& c, double r)
+#include "Random.h"
+
+const double CircleObstacle::smMaxScale{ 1.4 };
+const double CircleObstacle::smMinScale{ 0.8 };
+
+CircleObstacle::CircleObstacle(const QPointF& c, double baseRadius)
 	: mCenter{ c }
-	, mRadius{ r }
+	, mBaseRadius{ baseRadius }
+	, mScale{ Random::real(smMinScale, smMaxScale) }
 {
 }
 
 void CircleObstacle::draw(QPainter& painter) const
 {
-	painter.drawEllipse(mCenter, mRadius, mRadius);
-}
-
-void CircleObstacle::setRadius(double r)
-{
-	mRadius = r;
+	painter.drawEllipse(mCenter, radius(), radius());
 }
 
 double CircleObstacle::radius() const
 {
-	return mRadius;
+	return mBaseRadius * mScale;
 }
 
 double CircleObstacle::radius2() const
 {
-	return mRadius * mRadius;
+	double r{ radius() };
+	return r * r;
+}
+
+double CircleObstacle::maxScale()
+{
+	return smMaxScale;
+}
+
+double CircleObstacle::minScale()
+{
+	return smMinScale;
 }
 
 QPointF CircleObstacle::center() const 
 {
 	return mCenter;
+}
+
+void CircleObstacle::setBaseRadius(double r)
+{
+	mBaseRadius = r;
 }

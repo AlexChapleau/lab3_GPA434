@@ -14,19 +14,16 @@ class SensorPlacementStrategy : public de::SolutionStrategy
 public:
 	SensorPlacementStrategy() = delete;
 	SensorPlacementStrategy(QVector<Sensor*> sensors, QVector<CircleObstacle> obstacles,
-							double canvasWidth, double canvasHeight);
+							double canvasWidth, double canvasHeight, double cellSize);
 	SensorPlacementStrategy(SensorPlacementStrategy const&) = default;
 	SensorPlacementStrategy(SensorPlacementStrategy&&) = default;
 	SensorPlacementStrategy& operator=(SensorPlacementStrategy const&) = default;
 	SensorPlacementStrategy& operator=(SensorPlacementStrategy&&) = default;
-	~SensorPlacementStrategy() override = default;
+	~SensorPlacementStrategy() override;
 
 	std::string toString(de::Solution const& solution) const override;
 
 	DEFINE_OVERRIDE_CLONE_METHOD(SensorPlacementStrategy)
-
-//public:
-//	QPainterPath debugGridMask(QVector<QPainterPath> const& coveragePaths);
 
 protected:
 	double process(de::Solution const& solution) override;
@@ -52,13 +49,13 @@ private:
 	static const std::string smTitle;
 	static const std::string smSummary;
 	static const std::string smDescription;
-	static const double smCellSize;
 
 	Grid mGrid;
 	QVector<Sensor*> mSensors;
 	QVector<CircleObstacle> mObstacles;
-	double mCanvasWidth;
-	double mCanvasHeight;
+	const double mCanvasWidth;
+	const double mCanvasHeight;
+	const double mCellSize;
 	
 };
 

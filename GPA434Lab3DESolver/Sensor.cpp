@@ -6,15 +6,21 @@ Sensor::Sensor(QString name, double range)
 {
 }
 
-void Sensor::setRange(double range)
+QString Sensor::name() const
 {
-	mRange = range;
+	return mName;
 }
 
 double Sensor::range() const
 {
 	return mRange;
 }
+
+void Sensor::setRange(double range)
+{
+	mRange = range;
+}
+
 
 bool Sensor::isCollidingSensor(const QPainterPath& sensorBody, const QPainterPath& otherSensorBody)
 {
@@ -27,12 +33,8 @@ bool Sensor::isCollidingSensor(const QPainterPath& sensorBody, const QPainterPat
     return false;
 }
 
-QString Sensor::name() const
-{
-	return mName;
-}
 
-QPointF Sensor::castRay(QPointF origin, double radAngle, double range, const QVector<CircleObstacle>& obstacles, double canvasWidth, double canvasHeight)
+QPointF Sensor::castRay(QPointF origin, double radAngle, double range, const QVector<CircleObstacle>& obstacles)
 {
     QPointF u(qCos(radAngle), qSin(radAngle));
 
